@@ -1,0 +1,27 @@
+<custom_item>
+      type        : USER_RIGHTS_POLICY
+      description : "2.2.1 Ensure 'Access Credential Manager as a trusted caller' is set to 'No One'"
+      info        : "This security setting is used by Credential Manager during Backup and Restore. No accounts should have this user right, as it is only assigned to Winlogon. Users' saved credentials might be compromised if this user right is assigned to other entities.
+
+The recommended state for this setting is: No One.
+
+Rationale:
+
+If an account is given this right the user of the account may create an application that calls into Credential Manager and is returned the credentials for another user.
+
+Impact:
+
+None - this is the default behavior."
+      solution    : "To establish the recommended configuration via GP, set the following UI path to No One:
+
+Computer Configuration\Policies\Windows Settings\Security Settings\Local Policies\User Rights Assignment\Access Credential Manager as a trusted caller
+
+Default Value:
+
+No one."
+      reference   : "800-171|3.1.5,800-53|AC-6(7)(b),CIS_Recommendation|2.2.1,CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSCv6|5.1,CSCv7|4.8,CSF|PR.AC-4,ISO/IEC-27001|A.9.2.5,ITSG-33|AC-6,LEVEL|1A,NESA|M1.1.3,NESA|T5.1.1,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,QCSC-v1|5.2.2,QCSC-v1|6.2,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3"
+      see_also    : "https://workbench.cisecurity.org/files/3350"
+      value_type  : USER_RIGHT
+      value_data  : ""
+      right_type  : SeTrustedCredManAccessPrivilege
+    </custom_item>

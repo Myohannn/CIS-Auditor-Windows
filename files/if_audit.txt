@@ -1,0 +1,119 @@
+<if>
+      <condition type:"OR">
+        <custom_item>
+          type            : AUDIT_POWERSHELL
+          description     : "Check for SAC service - powershell"
+          value_type      : POLICY_TEXT
+          value_data      : "Fail"
+          powershell_args : "$service=$(get-service | where {$_.Name -like 'Special Administration Console Helper'}); if($service) { $result='Fail' } else { $result='Pass'}; $result"
+        </custom_item>
+      </condition>
+
+      <then>
+        <report type:"PASSED">
+          description : "5.30 Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed'"
+          info        : "This service allows administrators to remotely access a command prompt using Emergency Management Services.
+
+The recommended state for this setting is: Disabled or Not Installed.
+
+Note: This service is not installed by default. It is supplied with Windows, but it is installed by enabling an optional Windows capability (Windows Emergency Management Services and Serial Console).
+
+Rationale:
+
+Allowing the use of a remotely accessible command prompt that provides the ability to perform remote management tasks on a computer is a security risk.
+
+Impact:
+
+Users will not have access to a remote command prompt using Emergency Management Services."
+          solution    : "To establish the recommended configuration via GP, set the following UI path to: Disabled or ensure the service is not installed.
+
+Computer Configuration\Policies\Windows Settings\Security Settings\System Services\Special Administration Console Helper
+
+Default Value:
+
+Not Installed (Manual when installed)"
+          reference   : "800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3"
+          see_also    : "https://workbench.cisecurity.org/benchmarks/12412"
+        </report>
+      </then>
+
+      <else>
+        <if>
+          <condition type:"AND">
+            <custom_item>
+              type            : AUDIT_POWERSHELL
+              description     : "Check for SAC service"
+              value_type      : POLICY_TEXT
+              value_data      : "Fail"
+              powershell_args : "$service=$(get-service | where {$_.Name -like 'Special Administration Console Helper'}); if($service) { $result='Fail' } else { $result='Pass'}; $result"
+            </custom_item>
+          </condition>
+
+          <then>
+            <custom_item>
+              type            : AUDIT_POWERSHELL
+              description     : "5.30 Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed'"
+              info            : "This service allows administrators to remotely access a command prompt using Emergency Management Services.
+
+The recommended state for this setting is: Disabled or Not Installed.
+
+Note: This service is not installed by default. It is supplied with Windows, but it is installed by enabling an optional Windows capability (Windows Emergency Management Services and Serial Console).
+
+Rationale:
+
+Allowing the use of a remotely accessible command prompt that provides the ability to perform remote management tasks on a computer is a security risk.
+
+Impact:
+
+Users will not have access to a remote command prompt using Emergency Management Services."
+              solution        : "To establish the recommended configuration via GP, set the following UI path to: Disabled or ensure the service is not installed.
+
+Computer Configuration\Policies\Windows Settings\Security Settings\System Services\Special Administration Console Helper
+
+Default Value:
+
+Not Installed (Manual when installed)"
+              reference       : "800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3"
+              see_also        : "https://workbench.cisecurity.org/benchmarks/12412"
+              value_type      : POLICY_TEXT
+              value_data      : "Pass"
+              powershell_args : "$service=$(get-service | where {$_.Name -like 'Special Administration Console Helper'}); if($service) { $result='Fail' } else { $result='Pass'}; $result"
+            </custom_item>
+          </then>
+
+          <else>
+            <custom_item>
+              type        : REGISTRY_SETTING
+              description : "5.30 Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed'"
+              info        : "This service allows administrators to remotely access a command prompt using Emergency Management Services.
+
+The recommended state for this setting is: Disabled or Not Installed.
+
+Note: This service is not installed by default. It is supplied with Windows, but it is installed by enabling an optional Windows capability (Windows Emergency Management Services and Serial Console).
+
+Rationale:
+
+Allowing the use of a remotely accessible command prompt that provides the ability to perform remote management tasks on a computer is a security risk.
+
+Impact:
+
+Users will not have access to a remote command prompt using Emergency Management Services."
+              solution    : "To establish the recommended configuration via GP, set the following UI path to: Disabled or ensure the service is not installed.
+
+Computer Configuration\Policies\Windows Settings\Security Settings\System Services\Special Administration Console Helper
+
+Default Value:
+
+Not Installed (Manual when installed)"
+              reference   : "800-171|3.4.2,800-171|3.4.6,800-171|3.4.7,800-53|CM-6,800-53|CM-7,800-53r5|CM-6,800-53r5|CM-7,CSCv7|9.2,CSCv8|4.8,CSF|PR.IP-1,CSF|PR.PT-3,GDPR|32.1.b,HIPAA|164.306(a)(1),ITSG-33|CM-6,ITSG-33|CM-7,LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,SWIFT-CSCv1|2.3"
+              see_also    : "https://workbench.cisecurity.org/benchmarks/12412"
+              value_type  : POLICY_DWORD
+              value_data  : "4"
+              reg_key     : "HKLM\SYSTEM\CurrentControlSet\Services\sacsvr"
+              reg_item    : "Start"
+              reg_option  : CAN_BE_NULL
+            </custom_item>
+          </else>
+        </if>
+      </else>
+    </if>
