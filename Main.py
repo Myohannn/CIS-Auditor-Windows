@@ -112,9 +112,9 @@ def get_pwd_policy(subcategory):
         config.read_string('\n'.join(content))
 
         # Get the value of PasswordComplexity
-        password_complexity = config.get('System Access', subcategory)
+        result = config.get('System Access', subcategory)
 
-        return password_complexity
+        return result
 
     except FileNotFoundError:
         print(f"Could not find the key or value in the group policy.")
@@ -512,7 +512,7 @@ def check_result(src_df):
                         result_lists.append("Fail")
 
                 elif "Rename administrator account" in description:
-                    actual_value = get_admin_account("User name")
+                    actual_value = get_guest_account("User name")
                     actual_value_list.append(actual_value)
                     print(
                         f"{no_values[idx]}: The actual value is: {actual_value}")
