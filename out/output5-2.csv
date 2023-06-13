@@ -114,7 +114,7 @@ Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value
 1,AUDIT_POWERSHELL,0,Check for irda service,,,,Fail,,
 1,REGISTRY_SETTING,5.7,Ensure 'Infrared monitor service (irmon)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\irmon,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.8,Ensure 'Internet Connection Sharing (ICS) (SharedAccess)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess,Start,,4,4,Pass
-1,REGISTRY_SETTING,5.10,Ensure 'LxssManager (LxssManager)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\LxssManager,Start,,4,Value Not found,Fail
+1,REGISTRY_SETTING,5.1,Ensure 'LxssManager (LxssManager)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\LxssManager,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.11,Ensure 'Microsoft FTP Service (FTPSVC)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\FTPSVC,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.13,Ensure 'OpenSSH SSH Server (sshd)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\sshd,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.24,Ensure 'Remote Procedure Call (RPC) Locator (RpcLocator)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\RpcLocator,Start,,4,3,Fail
@@ -122,8 +122,8 @@ Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value
 1,REGISTRY_SETTING,5.28,Ensure 'Simple TCP/IP Services (simptcp)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\simptcp,Start,,4,Value Not found,Fail
 1,AUDIT_POWERSHELL,0,Check for SAC service - powershell,,,,Fail,,
 1,AUDIT_POWERSHELL,0,Check for SAC service,,,,Fail,,
-1,AUDIT_POWERSHELL,5.30,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',,,,Pass,,
-1,REGISTRY_SETTING,5.30,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\sacsvr,Start,,4,3,Fail
+1,AUDIT_POWERSHELL,5.3,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',,,,Pass,,
+1,REGISTRY_SETTING,5.3,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\sacsvr,Start,,4,3,Fail
 1,REGISTRY_SETTING,5.31,Ensure 'SSDP Discovery (SSDPSRV)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV,Start,,4,4,Pass
 1,REGISTRY_SETTING,5.32,Ensure 'UPnP Device Host (upnphost)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\upnphost,Start,,4,4,Pass
 1,REGISTRY_SETTING,5.33,Ensure 'Web Management Service (WMSvc)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\WMSvc,Start,,4,Value Not found,Fail
@@ -242,7 +242,7 @@ Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value
 1,REGISTRY_SETTING,18.9.19.2,Ensure 'Configure registry policy processing: Do not apply during periodic background processing' is set to 'Enabled: FALSE',HKLM\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2},NoBackgroundPolicy,,0,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.19.3,Ensure 'Configure registry policy processing: Process even if the Group Policy objects have not changed' is set to 'Enabled: TRUE',HKLM\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2},NoGPOListChanges,,0,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.19.4,Ensure 'Continue experiences on this device' is set to 'Disabled',HKLM\SOFTWARE\Policies\Microsoft\Windows\System,EnableCdp,,0,Value Not found,Fail
-1,REG_CHECK,18.9.19.5,Ensure 'Turn off background refresh of Group Policy' is set to 'Disabled',,,,HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System,Value Not found,Pass
+1,REG_CHECK,18.9.19.5,Ensure 'Turn off background refresh of Group Policy' is set to 'Disabled',,DisableBkGndGroupPolicy,,HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System,Value Not found,Pass
 1,REGISTRY_SETTING,18.9.20.1.2,Ensure 'Turn off downloading of print drivers over HTTP' is set to 'Enabled',HKLM\Software\Policies\Microsoft\Windows NT\Printers,DisableWebPnPDownload,,1,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.20.1.6,Ensure 'Turn off Internet download for Web publishing and online ordering wizards' is set to 'Enabled',HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer,NoWebServices,,1,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.25.1,Ensure 'Allow Custom SSPs and APs to be loaded into LSASS' is set to 'Disabled',HKLM\Software\Policies\Microsoft\Windows\System,AllowCustomSSPsAPs,,0,Value Not found,Fail

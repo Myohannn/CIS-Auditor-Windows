@@ -1,15 +1,15 @@
 Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value Data,actrual_value,result
 1,REGISTRY_SETTING,0,Windows 10 is installed,HKLM\Software\Microsoft\Windows Nt\Currentversion,ProductName,,^[Ww][Ii][Nn][Dd][Oo][Ww][Ss] @PLATFORM_VERSION@.+$,Windows Server 2019 Datacenter,Fail
-1,PASSWORD_POLICY,1.1.1,Ensure 'Enforce password history' is set to '24 or more password(s)',,,,@PASSWORD_HISTORY@,0,Fail
-1,PASSWORD_POLICY,1.1.2,"Ensure 'Maximum password age' is set to '365 or fewer days, but not 0'",,,,@MAXIMUM_PASSWORD_AGE@,42,Pass
-1,PASSWORD_POLICY,1.1.3,Ensure 'Minimum password age' is set to '1 or more day(s)',,,,@MINIMUM_PASSWORD_AGE@,0,Fail
-1,PASSWORD_POLICY,1.1.4,Ensure 'Minimum password length' is set to '14 or more character(s)',,,,@MINIMUM_PASSWORD_LENGTH@,0,Fail
-1,PASSWORD_POLICY,1.1.5,Ensure 'Password must meet complexity requirements' is set to 'Enabled',,,,Enabled,1,Pass
+1,PASSWORD_POLICY,1.1.1,Ensure 'Enforce password history' is set to '24 or more password(s)',,,,24,0,Fail
+1,PASSWORD_POLICY,1.1.2,"Ensure 'Maximum password age' is set to '365 or fewer days, but not 0'",,,,365,42,Pass
+1,PASSWORD_POLICY,1.1.3,Ensure 'Minimum password age' is set to '1 or more day(s)',,,,1,0,Fail
+1,PASSWORD_POLICY,1.1.4,Ensure 'Minimum password length' is set to '14 or more character(s)',,,,14,0,Fail
+1,PASSWORD_POLICY,1.1.5,Ensure 'Password must meet complexity requirements' is set to 'Enabled',,,,1,1,Pass
 1,REGISTRY_SETTING,1.1.6,Ensure 'Relax minimum password length limits' is set to 'Enabled',HKLM\System\CurrentControlSet\Control\SAM,RelaxMinimumPasswordLengthLimits,,1,Value Not found,Fail
-1,PASSWORD_POLICY,1.1.7,Ensure 'Store passwords using reversible encryption' is set to 'Disabled',,,,Disabled,0,Pass
+1,PASSWORD_POLICY,1.1.7,Ensure 'Store passwords using reversible encryption' is set to 'Disabled',,,,0,0,Pass
 1,LOCKOUT_POLICY,1.2.1,Ensure 'Account lockout duration' is set to '15 or more minute(s)',,,,[15..MAX],,
 1,LOCKOUT_POLICY,1.2.2,"Ensure 'Account lockout threshold' is set to '5 or fewer invalid logon attempt(s), but not 0'",,,,[1..5],,
-1,PASSWORD_POLICY,1.2.3,Ensure 'Allow Administrator account lockout' is set to 'Enabled',,,,Enabled,,Manual
+1,PASSWORD_POLICY,1.2.3,Ensure 'Allow Administrator account lockout' is set to 'Enabled',,,,1,,Manual
 1,LOCKOUT_POLICY,1.2.4,Ensure 'Reset account lockout counter after' is set to '15 or more minute(s)',,,,[15..MAX],,
 1,USER_RIGHTS_POLICY,2.2.1,Ensure 'Access Credential Manager as a trusted caller' is set to 'No One',,,,right_type  : SeTrustedCredManAccessPrivilege,,
 1,USER_RIGHTS_POLICY,2.2.2,"Ensure 'Access this computer from the network' is set to 'Administrators, Remote Desktop Users'",,,,Administrators &amp;&amp; Remote Desktop Users,,
@@ -114,7 +114,7 @@ Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value
 1,AUDIT_POWERSHELL,0,Check for irda service,,,,Fail,,
 1,REGISTRY_SETTING,5.7,Ensure 'Infrared monitor service (irmon)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\irmon,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.8,Ensure 'Internet Connection Sharing (ICS) (SharedAccess)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\SharedAccess,Start,,4,4,Pass
-1,REGISTRY_SETTING,5.10,Ensure 'LxssManager (LxssManager)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\LxssManager,Start,,4,Value Not found,Fail
+1,REGISTRY_SETTING,5.1,Ensure 'LxssManager (LxssManager)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\LxssManager,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.11,Ensure 'Microsoft FTP Service (FTPSVC)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\FTPSVC,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.13,Ensure 'OpenSSH SSH Server (sshd)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\sshd,Start,,4,Value Not found,Fail
 1,REGISTRY_SETTING,5.24,Ensure 'Remote Procedure Call (RPC) Locator (RpcLocator)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\RpcLocator,Start,,4,3,Fail
@@ -122,8 +122,8 @@ Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value
 1,REGISTRY_SETTING,5.28,Ensure 'Simple TCP/IP Services (simptcp)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\simptcp,Start,,4,Value Not found,Fail
 1,AUDIT_POWERSHELL,0,Check for SAC service - powershell,,,,Fail,,
 1,AUDIT_POWERSHELL,0,Check for SAC service,,,,Fail,,
-1,AUDIT_POWERSHELL,5.30,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',,,,Pass,,
-1,REGISTRY_SETTING,5.30,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\sacsvr,Start,,4,3,Fail
+1,AUDIT_POWERSHELL,5.3,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',,,,Pass,,
+1,REGISTRY_SETTING,5.3,Ensure 'Special Administration Console Helper (sacsvr)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\sacsvr,Start,,4,3,Fail
 1,REGISTRY_SETTING,5.31,Ensure 'SSDP Discovery (SSDPSRV)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\SSDPSRV,Start,,4,4,Pass
 1,REGISTRY_SETTING,5.32,Ensure 'UPnP Device Host (upnphost)' is set to 'Disabled',HKLM\SYSTEM\CurrentControlSet\Services\upnphost,Start,,4,4,Pass
 1,REGISTRY_SETTING,5.33,Ensure 'Web Management Service (WMSvc)' is set to 'Disabled' or 'Not Installed',HKLM\SYSTEM\CurrentControlSet\Services\WMSvc,Start,,4,Value Not found,Fail
@@ -242,7 +242,7 @@ Checklist,Type,Index,Description,Reg Key,Reg Item,Audit Policy Subcategory,Value
 1,REGISTRY_SETTING,18.9.19.2,Ensure 'Configure registry policy processing: Do not apply during periodic background processing' is set to 'Enabled: FALSE',HKLM\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2},NoBackgroundPolicy,,0,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.19.3,Ensure 'Configure registry policy processing: Process even if the Group Policy objects have not changed' is set to 'Enabled: TRUE',HKLM\Software\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2},NoGPOListChanges,,0,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.19.4,Ensure 'Continue experiences on this device' is set to 'Disabled',HKLM\SOFTWARE\Policies\Microsoft\Windows\System,EnableCdp,,0,Value Not found,Fail
-1,REG_CHECK,18.9.19.5,Ensure 'Turn off background refresh of Group Policy' is set to 'Disabled',,,,HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System,Value Not found,Pass
+1,REG_CHECK,18.9.19.5,Ensure 'Turn off background refresh of Group Policy' is set to 'Disabled',,DisableBkGndGroupPolicy,,HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System,Value Not found,Pass
 1,REGISTRY_SETTING,18.9.20.1.2,Ensure 'Turn off downloading of print drivers over HTTP' is set to 'Enabled',HKLM\Software\Policies\Microsoft\Windows NT\Printers,DisableWebPnPDownload,,1,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.20.1.6,Ensure 'Turn off Internet download for Web publishing and online ordering wizards' is set to 'Enabled',HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer,NoWebServices,,1,Value Not found,Fail
 1,REGISTRY_SETTING,18.9.25.1,Ensure 'Allow Custom SSPs and APs to be loaded into LSASS' is set to 'Disabled',HKLM\Software\Policies\Microsoft\Windows\System,AllowCustomSSPsAPs,,0,Value Not found,Fail

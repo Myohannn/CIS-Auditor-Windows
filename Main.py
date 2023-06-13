@@ -2,6 +2,8 @@ import pandas as pd
 import winreg
 import platform
 import subprocess
+import configparser
+import os
 
 
 def checkOS():
@@ -57,7 +59,7 @@ def get_audit_policy(subcategory):
             cmd, shell=True, text=True, capture_output=True)
         output = result.stdout
 
-        if output is "":
+        if output == "":
             return ""
 
         line = output.split('\n')[4]
@@ -93,10 +95,73 @@ def compare_audit_result(actual_value, expected_value):
     return "Fail"
 
 
+def get_pwd_policy(subcategory):
+
+    try:
+        subprocess.run(
+            'secedit /export /cfg %temp%\\secpol.cfg /areas SECURITYPOLICY', shell=True, check=True)
+
+        # Create a ConfigParser object
+        config = configparser.ConfigParser()
+
+        # Open the file in binary mode, read it, decode it and split it into lines
+        with open(os.getenv('temp') + '\\secpol.cfg', 'rb') as f:
+            content = f.read().decode('utf-16').split('\n')
+
+        # Make ConfigParser read the lines
+        config.read_string('\n'.join(content))
+
+        # Get the value of PasswordComplexity
+        password_complexity = config.get('System Access', subcategory)
+
+        return password_complexity
+
+    except FileNotFoundError:
+        print(f"Could not find the key or value in the group policy.")
+        return "Value Not found"
+    except PermissionError:
+        print(f"Access is denied")
+        return "Access is denied"
+
+
+def get_lockout_policy(policy_name):
+    command = 'net accounts'
+    output = subprocess.check_output(command, shell=True).decode()
+    output_lines = output.split("\n")
+
+    for line in output_lines:
+        if policy_name in line:
+
+            return line.strip().split()[-1]
+
+
+def get_guest_account(policy_name):
+    command = 'net user guest'
+    output = subprocess.check_output(command, shell=True).decode()
+    output_lines = output.split("\n")
+
+    for line in output_lines:
+        if policy_name in line:
+
+            return line.strip().split()[-1]
+
+
+def get_admin_account(policy_name):
+    command = 'net user administrator'
+    output = subprocess.check_output(command, shell=True).decode()
+    output_lines = output.split("\n")
+
+    for line in output_lines:
+        if policy_name in line:
+
+            return line.strip().split()[-1]
+
+
 def check_result(src_df):
     df = src_df
 
     checklist_values = df['Checklist'].values
+    description_values = df['Description'].values
     type_values = df['Type'].values
     no_values = df['Index'].values
     reg_path_values = df['Reg Key'].values
@@ -146,17 +211,13 @@ def check_result(src_df):
                 actual_value_list.append(actual_value)
                 print(f"{no_values[idx]}: The actual value is: {actual_value}")
 
+                # compare result vs expected_value
                 if actual_value == "":
                     result_lists.append("")
                     continue
 
-
                 result = compare_audit_result(actual_value, expect_value)
                 result_lists.append(result)
-
-                # compare result vs expected_value
-            
-            
             elif rule_type == "REG_CHECK":
 
                 if no_values[idx] == "18.9.19.5":
@@ -174,11 +235,325 @@ def check_result(src_df):
                     else:
                         print("Fail")
                         result_lists.append("Fail")
+
+                else:
+                    actual_value_list.append("")
+                    result_lists.append("")
+
             elif rule_type == "PASSWORD_POLICY":
-                print()
-            
-            
-            
+
+                description = str(description_values[idx])
+                expect_value = str(value_data_values[idx])
+
+                if "Enforce password history" in description:
+                    actual_value = get_pwd_policy('PasswordHistorySize')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value >= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Maximum password age" in description:
+                    actual_value = get_pwd_policy('MaximumPasswordAge')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value > 0 and actual_value <= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Minimum password age" in description:
+                    actual_value = get_pwd_policy('MinimumPasswordAge')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value >= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Minimum password length" in description:
+                    actual_value = get_pwd_policy('MinimumPasswordLength')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value >= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "complexity requirements" in description:
+                    actual_value = get_pwd_policy('PasswordComplexity')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value == int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "reversible encryption" in description:
+                    actual_value = get_pwd_policy('ClearTextPassword')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value == int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Administrator account lockout" in description:
+                    actual_value_list.append("")
+                    result_lists.append("Manual")
+
+                elif "Force logoff when logon hours expire" in description:
+                    actual_value = get_pwd_policy('ForceLogoffWhenHourExpire')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value == int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                else:
+                    actual_value_list.append("")
+                    result_lists.append("")
+
+            elif rule_type == "ANONYMOUS_SID_SETTING":
+
+                description = str(description_values[idx])
+                expect_value = str(value_data_values[idx])
+
+                if "Allow anonymous SID/Name translation" in description:
+                    actual_value = get_pwd_policy('LSAAnonymousNameLookup')
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+
+                    if actual_value == int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+                else:
+                    actual_value_list.append("")
+                    result_lists.append("")
+
+            elif rule_type == "LOCKOUT_POLICY":
+                description = str(description_values[idx])
+                expect_value = str(value_data_values[idx])
+
+                if "Account lockout duration" in description:
+                    actual_value = get_lockout_policy("Lockout duration")
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+                        continue
+
+                    if actual_value >= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Account lockout threshold" in description:
+                    actual_value = get_lockout_policy("Lockout threshold")
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    if actual_value == "Never":
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                    else:
+                        try:
+                            actual_value = int(actual_value)
+                        except ValueError:
+                            print(f"Invalid value: {actual_value}")
+                            result_lists.append("Fail")
+                            continue
+
+                        if actual_value > 0 and actual_value <= int(expect_value):
+                            print("Pass")
+                            result_lists.append("Pass")
+                        else:
+                            print("Fail")
+                            result_lists.append("Fail")
+
+                elif "Reset account lockout counter" in description:
+                    actual_value = get_lockout_policy(
+                        "Lockout observation window")
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+                        continue
+
+                    if actual_value >= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+                else:
+                    actual_value_list.append("")
+                    result_lists.append("")
+
+            elif rule_type == "CHECK_ACCOUNT":
+
+                description = str(description_values[idx])
+                expect_value = str(value_data_values[idx])
+
+                if "Guest account status" in description:
+                    actual_value = get_guest_account("Account active")
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+                        continue
+
+                    if actual_value >= int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Rename administrator account" in description:
+                    actual_value = get_admin_account("User name")
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+                        continue
+
+                    if actual_value != int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                elif "Rename guest account" in description:
+                    actual_value = get_guest_account("User name")
+                    actual_value_list.append(actual_value)
+                    print(
+                        f"{no_values[idx]}: The actual value is: {actual_value}")
+
+                    try:
+                        actual_value = int(actual_value)
+                    except ValueError:
+                        print(f"Invalid value: {actual_value}")
+                        result_lists.append("Fail")
+                        continue
+
+                    if actual_value != int(expect_value):
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+                else:
+                    actual_value_list.append("")
+                    result_lists.append("")
+
             else:
                 actual_value_list.append("")
                 result_lists.append("")
@@ -210,10 +585,10 @@ def save_file(df, out_fname):
 if __name__ == '__main__':
     checkOS()
 
-    src_fname = 'src\win10_v4.xlsx'
+    src_fname = 'src\win10_v6.xlsx'
     src_df = read_file(src_fname)
 
     output_df = check_result(src_df)
 
-    out_fname = "out\output3.csv"
+    out_fname = "out\output6.csv"
     save_file(src_df, out_fname)
