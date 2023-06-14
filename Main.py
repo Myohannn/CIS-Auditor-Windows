@@ -157,6 +157,83 @@ def get_admin_account(policy_name):
             return line.strip().split()[-1]
 
 
+def get_user_right(right_type):
+
+    subprocess.run(
+        'secedit /export /cfg %temp%\\secpol.cfg /areas user_rights', shell=True, check=True)
+
+    # Create a ConfigParser object
+    config = configparser.ConfigParser()
+
+    # Open the file in binary mode, read it, decode it and split it into lines
+    with open(os.getenv('temp') + '\\secpol.cfg', 'rb') as f:
+        content = f.read().decode('utf-16').split('\n')
+
+    # Make ConfigParser read the lines
+    config.read_string('\n'.join(content))
+
+    # Get the value of PasswordComplexity
+    result = config.get('Privilege Rights', right_type)
+
+    return result
+
+# print("result:",get_user_right('SeNetworkLogonRight'))
+
+
+def compare_user_right(right_type, expected_value, actual_value):
+    user_right_dict = {"": "",
+                       "Administrators": "*S-1-5-32-544",
+                       "Users": "*S-1-5-32-545",
+                       "Guests": "*S-1-5-32-546",
+                       "Remote Desktop Users": "*S-1-5-32-555",
+                       "LOCAL SERVICE": "*S-1-5-19",
+                       "NETWORK SERVICE": "*S-1-5-20",
+                       "SERVICE": "*S-1-5-6",
+                       "Virtual Machines": "*S-1-5-83-0",
+                       "Local account": "*S-1-5-113",
+                       "Window Manager\Window Manager Group": "*S-1-5-90-0",
+                       "NT SERVICE\WdiServiceHost": "*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420"}
+
+    actual_set = set(actual_value.split(','))
+    sid_set = set()
+    sid_set_list = []
+
+    if '(' in expected_value or ')' in expected_value:
+
+        if right_type == 'SeIncreaseBasePriorityPrivilege':
+            sid_set_list.append(set([user_right_dict['Administrators'],
+                                user_right_dict["Window Manager\Window Manager Group"]]))
+        elif right_type == 'SeCreateSymbolicLinkPrivilege':
+            sid_set_list.append(set([user_right_dict['Administrators']]))
+            sid_set_list.append(
+                set([user_right_dict['Administrators'], user_right_dict["Virtual Machines"]]))
+        elif right_type == 'SeSystemProfilePrivilege':
+            sid_set_list.append(set(
+                [user_right_dict['Administrators'], user_right_dict["NT SERVICE\WdiServiceHost"]]))
+
+    else:
+        if '&' in expected_value:
+            user_list = expected_value.split(" && ")
+            for u in user_list:
+                sid_set.add(user_right_dict[u])
+
+        elif '|' in expected_value:
+            user_list = expected_value.split(" || ")
+            for u in user_list:
+                sid_set.add(user_right_dict[u])
+        else:
+            sid_set.add(user_right_dict[expected_value])
+
+        sid_set_list.append(sid_set)
+
+    # print(actual_set)
+    # print(sid_set_list)
+    if actual_set in sid_set_list:
+        return True
+    else:
+        return False
+
+
 def check_result(src_df):
     df = src_df
 
@@ -168,6 +245,7 @@ def check_result(src_df):
     reg_item_values = df['Reg Item'].values
     value_data_values = df['Value Data'].values
     subcategory_values = df['Audit Policy Subcategory'].values
+    right_type_values = df['Right type'].values
 
     actual_value_list = []
     result_lists = []
@@ -512,7 +590,7 @@ def check_result(src_df):
                         result_lists.append("Fail")
 
                 elif "Rename administrator account" in description:
-                    actual_value = get_guest_account("User name")
+                    actual_value = get_admin_account("User name")
                     actual_value_list.append(actual_value)
                     print(
                         f"{no_values[idx]}: The actual value is: {actual_value}")
@@ -554,6 +632,43 @@ def check_result(src_df):
                     actual_value_list.append("")
                     result_lists.append("")
 
+            elif rule_type == "USER_RIGHTS_POLICY":
+
+                right_type = str(right_type_values[idx])
+                expect_value = str(value_data_values[idx])
+                try:
+                    actual_value = get_user_right(right_type)
+                    result = compare_user_right(
+                        right_type, expect_value, actual_value)
+                    if result:
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                except (configparser.NoOptionError, KeyError):
+                    null_value_list = ['SeTrustedCredManAccessPrivilege',
+                                       'SeTcbPrivilege',
+                                       'SeCreateTokenPrivilege',
+                                       'SeCreatePermanentPrivilege',
+                                       'SeEnableDelegationPrivilege',
+                                       'SeLockMemoryPrivilege',
+                                       'SeReLabelPrivilege'
+                                       ]
+                    if right_type in null_value_list:
+                        actual_value = ""
+                        print("Pass")
+                        result_lists.append("Pass")
+                    else:
+                        actual_value = "Invalid key"
+                        print("Fail")
+                        result_lists.append("Fail")
+
+                actual_value_list.append(actual_value)
+                print(
+                    f"{no_values[idx]}: The actual value is: {actual_value}")
+
             else:
                 actual_value_list.append("")
                 result_lists.append("")
@@ -585,10 +700,10 @@ def save_file(df, out_fname):
 if __name__ == '__main__':
     checkOS()
 
-    src_fname = 'src\win10_v6.xlsx'
+    src_fname = 'src\win10_v8.xlsx'
     src_df = read_file(src_fname)
 
     output_df = check_result(src_df)
 
-    out_fname = "out\output6.csv"
+    out_fname = "out\output8.csv"
     save_file(src_df, out_fname)

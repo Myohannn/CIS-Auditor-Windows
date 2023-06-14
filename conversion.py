@@ -46,6 +46,9 @@ def find_element(audit):
         type = regexes['type'].search(item_str)
         type = type.group(1) if type else None
 
+        if type == "AUDIT_POWERSHELL":
+            continue
+
         description = regexes['description'].search(item_str)
         description = description.group(1) if description else None
         description = description.replace('"', '')
@@ -94,7 +97,7 @@ def find_element(audit):
 def output_file(data, out_fname):
     # Create a DataFrame from the data
     df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
-                                     'Reg Key',  'Reg Item', 'Audit Policy Subcategory', 'right_type', 'Value Data'])
+                                     'Reg Key',  'Reg Item', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
 
     # Write the DataFrame to an Excel file
     df.to_excel(out_fname, index=False)
