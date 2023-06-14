@@ -6,9 +6,9 @@ def get_registry_value(path, name):
     winreg.CloseKey(key)
     return value
 
-path = r"Software\Microsoft\Windows\CurrentVersion\Policies\System"
+path = r"HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon"
 # print(path)
-name = "LegalNoticeText"
+name = "scremoveoption"
 value = get_registry_value(path, name)
 
 print(f"The value is: {value}")

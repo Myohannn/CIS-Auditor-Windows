@@ -8,26 +8,12 @@ import os
 
 def checkOS():
     info = platform.uname()
-    os_version = os_name = info.system + info.release
+    os_version = info.system + info.release
     print(f"Operating System Version: {os_version}")
 
     if os_version != "Windows10":
         print("Incorrect OS")
         exit()
-
-
-def get_registry_value_HKLM(path, name):
-    try:
-        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
-        value, regtype = winreg.QueryValueEx(key, name)
-        winreg.CloseKey(key)
-        return value
-    except FileNotFoundError:
-        print(f"Could not find the key or value in the registry.")
-        return "Value Not found"
-    except PermissionError:
-        print(f"Access is denied")
-        return "Access is denied"
 
 
 def get_registry_value(path, name):
@@ -43,6 +29,10 @@ def get_registry_value(path, name):
 
         value, regtype = winreg.QueryValueEx(key, name)
         winreg.CloseKey(key)
+
+        if str(value) == "['']":
+            value = float('nan')
+
         return value
     except FileNotFoundError:
         print(f"Could not find the key or value in the registry.")
@@ -251,6 +241,8 @@ def check_result(src_df):
     result_lists = []
 
     for idx, val in enumerate(checklist_values):
+        # if no_values[idx] == "2.3.10.7":
+        #     exit()
         if val == 1:
             rule_type = str(type_values[idx])
 
@@ -261,18 +253,68 @@ def check_result(src_df):
                 name = str(reg_item_values[idx])
                 expect_value = str(value_data_values[idx])
 
+                print("expt:",expect_value)
+
                 if path.startswith("HK"):
                     actual_value = get_registry_value(path, name)
                     actual_value_list.append(actual_value)
                     print(
                         f"{no_values[idx]}: The actual value is: {actual_value}")
 
-                    if expect_value == str(actual_value):
-                        print("Pass")
-                        result_lists.append("Pass")
-                    else:
+                    if actual_value != "Value Not found" and no_values[idx] == "2.3.10.7" or no_values[idx] == "2.3.10.8":
+                        expect_value = expect_value.lower().split(" && ")
+                        actual_value = [s.lower() for s in actual_value]
+
+                        if set(expect_value) == set(actual_value):
+                            print("Pass")
+                            result_lists.append("Pass")
+                        else:
+                            print("Fail")
+                            result_lists.append("Fail")
+                        continue
+
+                    elif actual_value != "Value Not found" and "||" in expect_value:
+                        expect_value = expect_value.split(" || ")
+                        if str(actual_value) in expect_value:
+                            print("Pass")
+                            result_lists.append("Pass")
+                        else:
+                            print("Fail")
+                            result_lists.append("Fail")
+                        continue
+
+                    elif actual_value != "Value Not found" and "[" in expect_value:
+                        vals = expect_value.strip("[]").split("..")
+                        min_val = vals[0]
+                        max_val = vals[1]
+
+                        if min_val == "MIN":
+                            if int(actual_value) <= int(max_val):
+                                print("Pass")
+                                result_lists.append("Pass")
+                                continue
+                        elif max_val == "MAX":
+                            if int(actual_value) >= int(min_val):
+                                print("Pass")
+                                result_lists.append("Pass")
+                                continue
+                        else:
+                            if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                                print("Pass")
+                                result_lists.append("Pass")
+                                continue
+
                         print("Fail")
                         result_lists.append("Fail")
+                        continue
+
+                    else:
+                        if expect_value == str(actual_value):
+                            print("Pass")
+                            result_lists.append("Pass")
+                        else:
+                            print("Fail")
+                            result_lists.append("Fail")
                 else:
                     actual_value_list.append("")
                     result_lists.append("")
@@ -705,5 +747,5 @@ if __name__ == '__main__':
 
     output_df = check_result(src_df)
 
-    out_fname = "out\output8.csv"
+    out_fname = "out\output8-3.csv"
     save_file(src_df, out_fname)
