@@ -5,6 +5,8 @@ import subprocess
 import configparser
 import os
 
+from pypsexec.client import Client
+
 
 def checkOS():
     info = platform.uname()
@@ -16,30 +18,39 @@ def checkOS():
         exit()
 
 
-def get_registry_value(path, name):
+def get_registry_value(reg_key, reg_item):
+
+    win_client = Client(
+        "192.168.56.103", username="vboxuser", password="AskDNV8!")
+    win_client.connect()
+
     try:
-        if path.startswith("HKLM"):
-            path = path.replace("HKLM\\", "")
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
-        elif path.startswith("HKU"):
-            path = path.replace("HKU\\", "")
-            key = winreg.OpenKey(winreg.HKEY_USERS, path)
-        else:
-            return "Invalid path"
+        if reg_key.startswith("HKLM"):
+            reg_key = reg_key.replace("HKLM", "HKLM:")
+        elif reg_key.startswith("HKU"):
+            reg_key = reg_key.replace("HKU", "HKU:")
 
-        value, regtype = winreg.QueryValueEx(key, name)
-        winreg.CloseKey(key)
+        win_client.create_service()
+        args = f"-command Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
 
-        if str(value) == "['']":
-            value = float('nan')
+        stdout, stderr, rc = win_client.run_executable(
+            "powershell.exe", arguments=args)
 
-        return value
-    except FileNotFoundError:
-        print(f"Could not find the key or value in the registry.")
-        return "Value Not found"
+        actual_value = stdout.decode(
+            "utf-8").strip()  # Convert bytes to string
+        stderr = stderr.decode("utf-8").strip()
+
+        if str(actual_value) == "['']":
+            actual_value = float('nan')
+        elif str(actual_value) == "":
+            actual_value = "Value Not found"
     except PermissionError:
         print(f"Access is denied")
         return "Access is denied"
+    finally:
+        win_client.remove_service()
+        win_client.disconnect()
+        return actual_value
 
 
 def get_audit_policy(subcategory):
@@ -230,8 +241,8 @@ def check_result(src_df):
     checklist_values = df['Checklist'].values
     description_values = df['Description'].values
     type_values = df['Type'].values
-    no_values = df['Index'].values
-    reg_path_values = df['Reg Key'].values
+    idx_values = df['Index'].values
+    reg_key_values = df['Reg Key'].values
     reg_item_values = df['Reg Item'].values
     value_data_values = df['Value Data'].values
     subcategory_values = df['Audit Policy Subcategory'].values
@@ -241,7 +252,7 @@ def check_result(src_df):
     result_lists = []
 
     for idx, val in enumerate(checklist_values):
-        # if no_values[idx] == "2.3.10.7":
+        # if idx_values[idx] == "2.3.10.7":
         #     exit()
         if val == 1:
             rule_type = str(type_values[idx])
@@ -249,19 +260,20 @@ def check_result(src_df):
             if rule_type == "REGISTRY_SETTING" or rule_type == "BANNER_CHECK":
 
                 # continue
-                path = str(reg_path_values[idx])
-                name = str(reg_item_values[idx])
+                reg_key = str(reg_key_values[idx])
+                reg_item = str(reg_item_values[idx])
                 expect_value = str(value_data_values[idx])
 
-                print("expt:",expect_value)
+                print(
+                    f"{idx_values[idx]}: The expected value is: {expect_value}")
 
-                if path.startswith("HK"):
-                    actual_value = get_registry_value(path, name)
+                if reg_key.startswith("HK"):
+                    actual_value = get_registry_value(reg_key, reg_item)
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
-                    if actual_value != "Value Not found" and no_values[idx] == "2.3.10.7" or no_values[idx] == "2.3.10.8":
+                    if actual_value != "Value Not found" and idx_values[idx] == "2.3.10.7" or idx_values[idx] == "2.3.10.8":
                         expect_value = expect_value.lower().split(" && ")
                         actual_value = [s.lower() for s in actual_value]
 
@@ -309,7 +321,7 @@ def check_result(src_df):
                         continue
 
                     else:
-                        if expect_value == str(actual_value):
+                        if str(expect_value) == str(actual_value):
                             print("Pass")
                             result_lists.append("Pass")
                         else:
@@ -329,7 +341,8 @@ def check_result(src_df):
                 print(subcategory)
                 actual_value = get_audit_policy(subcategory)
                 actual_value_list.append(actual_value)
-                print(f"{no_values[idx]}: The actual value is: {actual_value}")
+                print(
+                    f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                 # compare result vs expected_value
                 if actual_value == "":
@@ -340,15 +353,15 @@ def check_result(src_df):
                 result_lists.append(result)
             elif rule_type == "REG_CHECK":
 
-                if no_values[idx] == "18.9.19.5":
-                    # path = 'Software\Microsoft\Windows\CurrentVersion\Policies\System'
-                    path = value_data_values[idx]
-                    # name = 'DisableBkGndGroupPolicy'
-                    name = str(reg_item_values[idx])
-                    actual_value = get_registry_value(path, name)
+                if idx_values[idx] == "18.9.19.5":
+                    # reg_key = 'Software\Microsoft\Windows\CurrentVersion\Policies\System'
+                    reg_key = value_data_values[idx]
+                    # reg_item = 'DisableBkGndGroupPolicy'
+                    reg_item = str(reg_item_values[idx])
+                    actual_value = get_registry_value(reg_key, reg_item)
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
                     if actual_value == "Value Not found" or actual_value == "Disabled":
                         print("Pass")
                         result_lists.append("Pass")
@@ -369,7 +382,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('PasswordHistorySize')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -388,7 +401,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('MaximumPasswordAge')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -407,7 +420,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('MinimumPasswordAge')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -426,7 +439,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('MinimumPasswordLength')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -445,7 +458,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('PasswordComplexity')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -464,7 +477,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('ClearTextPassword')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -487,7 +500,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('ForceLogoffWhenHourExpire')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -515,7 +528,7 @@ def check_result(src_df):
                     actual_value = get_pwd_policy('LSAAnonymousNameLookup')
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -541,7 +554,7 @@ def check_result(src_df):
                     actual_value = get_lockout_policy("Lockout duration")
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -561,7 +574,7 @@ def check_result(src_df):
                     actual_value = get_lockout_policy("Lockout threshold")
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     if actual_value == "Never":
                         print("Fail")
@@ -587,7 +600,7 @@ def check_result(src_df):
                         "Lockout observation window")
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -615,7 +628,7 @@ def check_result(src_df):
                     actual_value = get_guest_account("Account active")
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -635,7 +648,7 @@ def check_result(src_df):
                     actual_value = get_admin_account("User name")
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -655,7 +668,7 @@ def check_result(src_df):
                     actual_value = get_guest_account("User name")
                     actual_value_list.append(actual_value)
                     print(
-                        f"{no_values[idx]}: The actual value is: {actual_value}")
+                        f"{idx_values[idx]}: The actual value is: {actual_value}")
 
                     try:
                         actual_value = int(actual_value)
@@ -709,7 +722,7 @@ def check_result(src_df):
 
                 actual_value_list.append(actual_value)
                 print(
-                    f"{no_values[idx]}: The actual value is: {actual_value}")
+                    f"{idx_values[idx]}: The actual value is: {actual_value}")
 
             else:
                 actual_value_list.append("")
@@ -740,12 +753,15 @@ def save_file(df, out_fname):
 
 
 if __name__ == '__main__':
+
+    # win_client.connect()
+
     checkOS()
 
-    src_fname = 'src\win10_v8.xlsx'
+    src_fname = 'src\win10_v9_registry_value.xlsx'
     src_df = read_file(src_fname)
 
     output_df = check_result(src_df)
 
-    out_fname = "out\output8-3.csv"
+    out_fname = "out\remote_output_v9_registry_value.csv"
     save_file(src_df, out_fname)
