@@ -70,8 +70,8 @@
 3. LOCKOUT_POLICY
     1. Manually modify all expexted values 
 4. CHECK_ACCOUNT: 
-    1. 2.3.1.2: Modify “Disabled” → “No
-    2. 2.3.1.4: Modify “Administrator”
+    1. 2.3.1.2: Disabled → No
+    2. 2.3.1.4: \b[Aa]dmin(istrator)? → Administrator
 5.  BANNER_CHECK:
     1. 2.3.7.5 & 2.3.7.6: Manually modify expexted value to “Blank Message”
 6. ANONYMOUS_SID_SETTING: 
