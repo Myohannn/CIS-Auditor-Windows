@@ -4,6 +4,7 @@ import platform
 import subprocess
 import configparser
 import os
+import time
 
 from pypsexec.client import Client
 
@@ -20,17 +21,13 @@ def checkOS():
 
 def get_registry_value(reg_key, reg_item):
 
-    win_client = Client(
-        "192.168.56.103", username="vboxuser", password="AskDNV8!")
-    win_client.connect()
-
     try:
         if reg_key.startswith("HKLM"):
             reg_key = reg_key.replace("HKLM", "HKLM:")
         elif reg_key.startswith("HKU"):
             reg_key = reg_key.replace("HKU", "HKU:")
 
-        win_client.create_service()
+        # win_client.create_service()
         args = f"-command Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
 
         stdout, stderr, rc = win_client.run_executable(
@@ -44,13 +41,12 @@ def get_registry_value(reg_key, reg_item):
             actual_value = float('nan')
         elif str(actual_value) == "":
             actual_value = "Value Not found"
+
     except PermissionError:
         print(f"Access is denied")
         return "Access is denied"
-    finally:
-        win_client.remove_service()
-        win_client.disconnect()
-        return actual_value
+
+    return actual_value
 
 
 def get_audit_policy(subcategory):
@@ -754,6 +750,13 @@ def save_file(df, out_fname):
 
 if __name__ == '__main__':
 
+    # win_client = Client(
+    #     "192.168.56.103", username="vboxuser", password="AskDNV8!")
+    win_client = Client(
+        "localhost", username="administrator", password="Myohan666")
+    win_client.connect()
+    win_client.create_service()
+
     # win_client.connect()
 
     checkOS()
@@ -761,7 +764,16 @@ if __name__ == '__main__':
     src_fname = 'src\win10_v9_registry_value.xlsx'
     src_df = read_file(src_fname)
 
-    output_df = check_result(src_df)
+    try:
+        start_time = time.time()
+        output_df = check_result(src_df)
+        end_time = time.time()
+        print(end_time - start_time)
+    finally:
+        win_client.remove_service()
+        win_client.disconnect()
 
-    out_fname = "out\remote_output_v9_registry_value.csv"
+    # output_df = check_result(src_df)
+
+    out_fname = r"out\remote_output_v9_registry_value.csv"
     save_file(src_df, out_fname)
