@@ -1,6 +1,3 @@
-# input .audit file
-# output version source file
-
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
@@ -18,6 +15,21 @@ regexes = {
 }
 
 
+data_dict = {
+
+    "PASSWORD_POLICY": [],
+    "REGISTRY_SETTING": [],
+    "LOCKOUT_POLICY": [],
+    "USER_RIGHTS_POLICY": [],
+    "CHECK_ACCOUNT": [],
+    "BANNER_CHECK": [],
+    "ANONYMOUS_SID_SETTING": [],
+    "AUDIT_POLICY_SUBCATEGORY": [],
+    "REG_CHECK": [],
+
+}
+
+
 def read_file(filename):
     contents = ''
     try:
@@ -31,7 +43,6 @@ def read_file(filename):
 
 
 def find_element(audit):
-    data = []
 
     soup = BeautifulSoup(audit, 'lxml')
 
@@ -65,7 +76,6 @@ def find_element(audit):
         value_data = str(value_data).replace('"', '')
         value_data = str(value_data).replace('&amp;&amp;', '&&')
 
-
         reg_key = regexes['reg_key'].search(item_str)
         reg_key = (reg_key.group(1)).replace('"', '') if reg_key else None
 
@@ -84,26 +94,39 @@ def find_element(audit):
             1)).replace('"', '') if audit_policy_subcategory else None
 
         right_type = regexes['right_type'].search(item_str)
-        right_type = (right_type.group(1)).replace('"', '') if right_type else None
-
+        right_type = (right_type.group(1)).replace(
+            '"', '') if right_type else None
 
         # Append the data to the list
-        data.append([1, type, index, description,
-                    reg_key, reg_item, audit_policy_subcategory, right_type, value_data])
+        # data.append([1, type, index, description,
+        #             reg_key, reg_item, audit_policy_subcategory, right_type, value_data])
 
-    return data
+        data_dict[type].append([1, type, index, description,
+                                reg_key, reg_item, audit_policy_subcategory, right_type, value_data])
 
-
-def output_file(data, out_fname):
-    # Create a DataFrame from the data
-    df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
-                                     'Reg Key',  'Reg Item', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
-
-    # Write the DataFrame to an Excel file
-    df.to_excel(out_fname, index=False)
-    print(f"File export success --- {out_fname}")
+    # return data
 
 
+def output_file(data, writer):
+
+    for type, data in data_dict.items():
+        df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
+                                         'Reg Key',  'Reg Item', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
+        df.to_excel(writer, sheet_name=type, index=False)
+
+
+    # # Create a DataFrame from the data
+    # df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
+    #                                  'Reg Key',  'Reg Item', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
+    # # Write the DataFrame to an Excel file
+    # df.to_excel(writer, sheet_name='REGISTRY_SETTING', index=False)
+    # df.to_excel(writer, sheet_name='PASSWORD_POLICY', index=False)
+    # df.to_excel(writer, sheet_name='LOCKOUT_POLICY', index=False)
+    # df.to_excel(writer, sheet_name='USER_RIGHTS_POLICY', index=False)
+    # df.to_excel(writer, sheet_name='CHECK_ACCOUNT', index=False)
+    # df.to_excel(writer, sheet_name='BANNER_CHECK', index=False)
+    # df.to_excel(writer, sheet_name='AUDIT_POLICY_SUBCATEGORY', index=False)
+    # print(f"File export success --- {out_fname}")
 if __name__ == '__main__':
 
     src_fname = 'src/test.audit'
@@ -111,5 +134,9 @@ if __name__ == '__main__':
 
     data = find_element(audit)
 
-    out_fname = 'out\source_v1.xlsx'
-    output_file(data, out_fname)
+    out_fname = 'out\source_v3.xlsx'
+    writer = pd.ExcelWriter(out_fname, engine='openpyxl')
+
+    output_file(data, writer)
+    writer.save()
+    print(f"File export success --- {out_fname}")
