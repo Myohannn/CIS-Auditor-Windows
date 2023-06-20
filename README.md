@@ -1,4 +1,7 @@
-# CIS_Benchmark_Assessor_Win
+# CIS Benchmark Assessor
+
+### Available version:
+- [x] Windows 10
 
 ## Powershell commands
 
