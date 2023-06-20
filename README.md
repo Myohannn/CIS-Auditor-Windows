@@ -1,6 +1,6 @@
 # CIS_Benchmark_Assessor_Win
 
-##Powershell commands
+## Powershell commands
 
 - [x] REGISTRY_SETTING / BANNER_CHECK / REG_CHECK
 
@@ -55,7 +55,7 @@
 
 ***
 
-##Remarks
+## Remarks
 1. Index 18.9.19.5 is hardcoded
 2. Use Level 1 is enough
 3. PASSWORD_POLICY: 
