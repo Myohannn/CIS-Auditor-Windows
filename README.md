@@ -1,7 +1,6 @@
 # CIS_Benchmark_Assessor_Win
-A Windows CIS Benchmark Assessor
 
-Python script remarks:
+Remarks:
 
 1. Index 18.9.19.5 is hardcoded
 2. Use Level 1 is enough
