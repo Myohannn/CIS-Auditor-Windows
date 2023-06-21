@@ -79,6 +79,8 @@
     1. 2.3.7.5 & 2.3.7.6: Manually modify expexted value to “Blank Message”
 6. ANONYMOUS_SID_SETTING: 
     1. 2.3.10.1 Manually modify expexted value: Disabled → 0
+7. REG_CHECK:
+    1. 18.9.19.5 Replace "Value Data" and "Reg Key" 
   
 ***
 
