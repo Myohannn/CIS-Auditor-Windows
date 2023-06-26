@@ -57,6 +57,27 @@
     ```
 
 ***
+## SETUP -- Windows configuration
+
+### Open (Local accounts only) User Account Control (UAC)
+To disable UAC, open the Control Panel, select User Accounts, and set Turn User Account Control to Off.
+
+`Recommend:` Alternatively, instead of disabling UAC, you can add a new registry DWORD named LocalAccountTokenFilterPolicy and setting its value to 1. Create this key in the following registry: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\system\LocalAccountTokenFilterPolicy. 
+
+### Open Host Firewall
+Using the Run prompt, run gpedit.msc and enable Group Policy Object Editor. Navigate to Local Computer Policy > Administrative Templates > Network > Network Connections > Windows Firewall > Standard Profile > Windows Firewall: Allow inbound file and printer exception and enable it.
+
+While in the Group Policy Object Editor, navigate to Local Computer Policy > Administrative Templates > Network > Network Connections > Prohibit use of Internet connection firewall on your DNS domain. Set this option to either Disabled or Not Configured.
+
+Open any host firewalls to allow connections from local to File and Printer Sharing on TCP ports `139` and `445`.
+
+### Open Remote Registry
+Enable the Remote Registry. You can enable it for a one-time audit, or leave it enabled permanently if you perform frequent audits.
+
+### Open Administrative Shares
+Enable administrative shares (IP$, ADMIN$, C$). Make sure you have the administrator access.
+
+Note: Windows 10 disables ADMIN$ by default. For all other operating systems, the three administrative shares are enabled by default and can cause other issues if disabled. For more information, see http://support.microsoft.com/kb/842715/en-us.
 
 ## Prepare audit file -- conversion.py
 1. PASSWORD_POLICY: 
