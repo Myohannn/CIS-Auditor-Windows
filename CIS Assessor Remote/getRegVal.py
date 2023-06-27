@@ -1,7 +1,7 @@
 import winreg
 from pypsexec.client import Client
 
-win_client = Client("192.168.56.103", username="vboxuser", password="AskDNV8!")
+win_client = Client("192.168.56.103", username="", password="")
 win_client.connect()
 
 
