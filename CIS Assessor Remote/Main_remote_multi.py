@@ -1486,22 +1486,14 @@ def run(ip, data_dict):
 if __name__ == '__main__':
     start_t0 = time.time()
 
+    # read configurations
     config_fname = 'src\config.xlsx'
     ip_list = configurations(config_fname)
-    # print(ip_dict)
 
     # read input file
     src_fname = 'src\win10_v10.xlsx'
     # src_fname = 'src\win10_v10_test.xlsx'
     data_dict = read_file(src_fname)
-
-    # generate powershell commands
-    # ps_arg_list = gen_ps_args()
-    # print("ps_cmd_list: ", ps_args_dict["USER_RIGHTS_POLICY"])
-
-    # pool = Pool(processes=4)
-
-    # result = pool.map(run, ip_list)
 
     with Manager() as manager:
         # initialize shared dictionary with data_dict
@@ -1510,9 +1502,6 @@ if __name__ == '__main__':
         with Pool(processes=4) as pool:
             results = pool.starmap(
                 run, [(ip, shared_data_dict) for ip in ip_list])
-
-    # for ip in ip_list:
-    #     run(ip, data_dict)
 
     # write output file
     out_fname = r"out\remote_output_v10.csv"
