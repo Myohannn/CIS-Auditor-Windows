@@ -605,10 +605,13 @@ if __name__ == '__main__':
     # src_fname = 'src\win10_v10_test.xlsx'
     data_dict = read_file(src_fname)
 
-    results = []
+    with Manager() as manager:
+        # initialize shared dictionary with data_dict
+        shared_data_dict = manager.dict(data_dict)
 
-    for ip in ip_list:
-        results.append(run(ip, data_dict))
+        with Pool(processes=4) as pool:
+            results = pool.starmap(
+                run, [(ip, shared_data_dict) for ip in ip_list])
 
     # write output file
     out_fname = r"out\remote_output_v12.xlsx"

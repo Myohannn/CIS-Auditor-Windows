@@ -1,9 +1,10 @@
 import configparser
 import subprocess
 import os
+from pypsexec.client import Client
 
 
-def get_user_right(subcategory):
+def get_user_right_local(subcategory):
 
     subprocess.run(
         'secedit /export /cfg %temp%\\secpol.cfg /areas user_rights', shell=True, check=True)
@@ -23,13 +24,97 @@ def get_user_right(subcategory):
 
     return result
 
-# print("result:",get_user_right('SeNetworkLogonRight'))
+
+def get_sid(username):
+    cmd = f'(New-Object -TypeName System.Security.Principal.NTAccount("{username}")).Translate([System.Security.Principal.SecurityIdentifier]).Value'
+    result = subprocess.run(
+        ["powershell", "-Command", cmd], capture_output=True)
+    return result.stdout.decode().strip()
 
 
+def get_user_rights_remote():
+    try:
 
-def compare_user_right(right_type, expected_value, actual_value):
-    user_right_dict = {"":"",
-        "Administrators": "*S-1-5-32-544",
+        win_client = Client("", username="", password="")
+        win_client.connect()
+        win_client.create_service()
+
+        # dump all user rights
+        arg = r"if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp };secedit /export /cfg C:\temp\secpol.cfg /areas user_rights"
+        win_client.run_executable(
+            "powershell.exe", arguments=arg)
+
+        # get user rights value
+        args_list = ["Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTrustedCredManAccessPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeNetworkLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTcbPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeIncreaseQuotaPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeRemoteInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeBackupPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSystemTimePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTimeZonePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreatePagefilePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreateTokenPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreateGlobalPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreatePermanentPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreateSymbolicLinkPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDebugPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyNetworkLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyBatchLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyServiceLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyRemoteInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeEnableDelegationPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeRemoteShutdownPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeAuditPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeImpersonatePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeIncreaseBasePriorityPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeLoadDriverPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeLockMemoryPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSecurityPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeReLabelPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSystemEnvironmentPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeManageVolumePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeProfileSingleProcessPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSystemProfilePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeAssignPrimaryTokenPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeRestorePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeShutdownPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTakeOwnershipPrivilege'"]
+        result = ''
+        # print(len(args_list))
+        for arg in args_list:
+
+            stdout, stderr, rc = win_client.run_executable(
+                "powershell.exe", arguments=arg)
+
+            output = stdout.decode("utf-8").replace('\r\n', '')
+            result = result + output
+
+    finally:
+        win_client.remove_service()
+        win_client.disconnect()
+        return result
+
+
+def get_user_rights_actual_value(args_list, ip):
+
+    max_attempts = 5
+    for attempt in range(max_attempts):
+
+        try:
+
+            win_client = Client(
+                ip[0], username=ip[1], password=ip[2])
+            win_client.connect()
+            win_client.create_service()
+
+            # dump all user rights
+            arg = r"if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp };secedit /export /cfg C:\temp\secpol.cfg /areas user_rights"
+            win_client.run_executable(
+                "powershell.exe", arguments=arg)
+
+            # get user rights value
+            actual_values = ''
+            # print(len(args_list))
+            for arg in args_list:
+
+                stdout, stderr, rc = win_client.run_executable(
+                    "powershell.exe", arguments=arg)
+
+                output = stdout.decode("utf-8").replace('\r\n', '')
+                actual_values = actual_values + output
+
+            break
+
+        except Exception as e:
+            print(f"{ip[0]} | Error: {e}")
+            print(f"Tried {attempt+1} times")
+
+        finally:
+            win_client.remove_service()
+            win_client.disconnect()
+
+    actual_value_list = actual_values.split("====")
+    actual_value_list.pop(0)
+
+    for i in range(len(actual_value_list)):
+        actual_value_list[i] = actual_value_list[i].split("=")[-1].strip()
+
+    # print(actual_value_list)
+    # print("length of value", len(actual_value_list))
+    # actual_value_dict["USER_RIGHTS_POLICY"] = actual_value_list
+    return actual_value_list
+
+
+def compare_user_right_result(right_type, expected_value, actual_value):
+    user_right_dict = {"": "",
+                       "Administrators": "*S-1-5-32-544",
                        "Users": "*S-1-5-32-545",
                        "Guests": "*S-1-5-32-546",
                        "Remote Desktop Users": "*S-1-5-32-555",
@@ -73,7 +158,6 @@ def compare_user_right(right_type, expected_value, actual_value):
 
         sid_set_list.append(sid_set)
 
-    
     # print(actual_set)
     # print(sid_set_list)
     if actual_set in sid_set_list:
@@ -81,23 +165,69 @@ def compare_user_right(right_type, expected_value, actual_value):
     else:
         return False
 
-expected_value = "Administrators"
-actual_value = "*S-1-5-32-544,*S-1-5-32-551"
-right_type = 'SeCreateSymbolicLinkPrivilege'
-print(compare_user_right(right_type, expected_value, actual_value))
 
+def compare_user_rights(ip_addr, actual_value_list, data_dict):
+    # user rights
+    df = data_dict["USER_RIGHTS_POLICY"]
+    checklist_values = df['Checklist'].values
+    idx_values = df['Index'].values
+    value_data_values = df['Value Data'].values
+    right_type_values = df['Right type'].values
 
-# d = "locAl aCcount"
-# sid = subprocess.run(f'-Command (New-Object -TypeName System.Security.Principal.NTAccount("{d}")).Translate([System.Security.Principal.SecurityIdentifier]).Value', shell=True, check=True)
+    # actual_value_list = actual_value_dict["USER_RIGHTS_POLICY"]
+    result_lists = []
 
+    for idx, val in enumerate(checklist_values):
 
-def get_sid(username):
-    cmd = f'(New-Object -TypeName System.Security.Principal.NTAccount("{username}")).Translate([System.Security.Principal.SecurityIdentifier]).Value'
-    result = subprocess.run(
-        ["powershell", "-Command", cmd], capture_output=True)
-    return result.stdout.decode().strip()
+        pass_result = True
 
+        if val == 1:
 
-# username = "NETWORK SERVICE"
-# sid = get_sid(username)
-# print(sid)
+            right_type = str(right_type_values[idx])
+            expected_value = str(value_data_values[idx])
+            actual_value = actual_value_list[idx]
+
+            try:
+                result = compare_user_right_result(
+                    right_type, expected_value, actual_value)
+                if result:
+                    pass_result = True
+                else:
+                    pass_result = False
+
+            except (configparser.NoOptionError, KeyError):
+                null_value_list = ['SeTrustedCredManAccessPrivilege',
+                                   'SeTcbPrivilege',
+                                   'SeCreateTokenPrivilege',
+                                   'SeCreatePermanentPrivilege',
+                                   'SeEnableDelegationPrivilege',
+                                   'SeLockMemoryPrivilege',
+                                   'SeReLabelPrivilege'
+                                   ]
+                if right_type in null_value_list:
+                    pass_result = True
+                else:
+                    actual_value = "Invalid key"
+                    pass_result = False
+
+            if pass_result:
+                print(
+                    f"{ip_addr} | {idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
+                result_lists.append("PASSED")
+            else:
+                print(
+                    f"{ip_addr} | {idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
+                result_lists.append("FAILED")
+
+        else:
+            actual_value_list.append("")
+            result_lists.append("")
+
+    col_name1 = ip_addr + ' | Actual Value'
+    col_name2 = ip_addr + ' | Result'
+
+    df[col_name1] = actual_value_list
+    df[col_name2] = result_lists
+
+    # data_dict["USER_RIGHTS_POLICY"] = df
+    return df

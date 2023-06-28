@@ -1,23 +1,10 @@
-import subprocess
 from pypsexec.client import Client
 
 
-def get_audit_policy(subcategory):
-    cmd = f'auditpol /get /subcategory:"{subcategory}"'
-    result = subprocess.run(cmd, shell=True, text=True, capture_output=True)
-    output = result.stdout
-    print(f'result is {output}')
-
-    line = output.split('\n')[4]
-    result = line.replace(subcategory, '').strip()
-    return result
-
-
-def get_audit_policy_actual_value(args_list, ip):
+def get_reg_check_actual_value(args_list, ip):
 
     max_attempts = 5
     for attempt in range(max_attempts):
-
         try:
 
             win_client = Client(
@@ -25,16 +12,13 @@ def get_audit_policy_actual_value(args_list, ip):
             win_client.connect()
             win_client.create_service()
 
-            # get audit policy value
             actual_values = ''
             for arg in args_list:
-
                 stdout, stderr, rc = win_client.run_executable(
                     "powershell.exe", arguments=arg)
 
                 output = stdout.decode("utf-8").replace('\r\n', '')
                 actual_values = actual_values + output
-
             break
 
         except Exception as e:
@@ -44,32 +28,20 @@ def get_audit_policy_actual_value(args_list, ip):
         finally:
             win_client.remove_service()
             win_client.disconnect()
+            # return actual_values
 
     actual_value_list = actual_values.split("====")
     actual_value_list.pop(0)
-
-    for i in range(len(actual_value_list)):
-        val = actual_value_list[i].split()[-1].strip()
-        if val == "Auditing":
-            actual_value_list[i] = "No Auditing"
-        else:
-            actual_value_list[i] = val
-
-    # print(actual_value_list)
-    # print("length of value", len(actual_value_list))
-    # actual_value_dict["AUDIT_POLICY_SUBCATEGORY"] = actual_value_list
     return actual_value_list
 
 
-def compare_audit_policy(ip_addr, actual_value_list, data_dict):
-
-    # audit policy
-    df = data_dict["AUDIT_POLICY_SUBCATEGORY"]
+def compare_reg_check(ip_addr, actual_value_list, data_dict):
+    # reg check
+    df = data_dict["REG_CHECK"]
     checklist_values = df['Checklist'].values
     idx_values = df['Index'].values
     value_data_values = df['Value Data'].values
 
-    # actual_value_list = actual_value_dict["AUDIT_POLICY_SUBCATEGORY"]
     result_lists = []
 
     for idx, val in enumerate(checklist_values):
@@ -79,9 +51,16 @@ def compare_audit_policy(ip_addr, actual_value_list, data_dict):
         if val == 1:
 
             expected_value = str(value_data_values[idx]).lower()
-            actual_value = actual_value_list[idx]
 
-            pass_result = compare_audit_result(actual_value, expected_value)
+            if actual_value_list[idx] == "":
+                actual_value_list[idx] = "Null"
+
+            actual_value = actual_value_list[idx].lower()
+
+            if actual_value == 'null' or actual_value == 'disabled':
+                pass_result = True
+            else:
+                pass_result = False
 
             if pass_result:
                 print(
@@ -102,26 +81,4 @@ def compare_audit_policy(ip_addr, actual_value_list, data_dict):
     df[col_name1] = actual_value_list
     df[col_name2] = result_lists
 
-    # data_dict["AUDIT_POLICY_SUBCATEGORY"] = df
     return df
-
-
-def compare_audit_result(actual_value, expected_value):
-
-    result_dict = {"Success and Failure": "Success, Failure",
-                   "Success": "Success",
-                   "Failure": "Failure",
-                   "No Auditing": "Not Configured"}
-
-    if "||" in expected_value:
-        expected_list = expected_value.split("||")
-        for i in expected_list:
-            i = i.strip()
-            if result_dict[actual_value] == i:
-                return True
-
-    elif result_dict[actual_value] == expected_value:
-
-        return True
-
-    return False
