@@ -11,7 +11,7 @@ def get_registry_value_local(path, name):
     return value
 
 
-def get_registry_value_remote(args_list):
+def get_registry_value_list(args_list):
 
     try:
         win_client = Client("", username="", password="")
@@ -41,37 +41,24 @@ def get_registry_value_remote(args_list):
         return result
 
 
-def get_value():
+def get_reg_value(ip, reg_key, reg_item):
     try:
-        reg_key = r"HKLM:\System\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths"
-        reg_item = "Machine"
-        win_client = Client("", username="", password="")
+        win_client = Client(
+            ip[0], username=ip[1], password=ip[2])
         win_client.connect()
         win_client.create_service()
-        # args = "-command \"Get-ItemPropertyValue -Path 'HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion' -Name 'ProductName'\""
-        # arg = f"-command Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
-        arg = '''
-        Write-Output '====';Get-ItemPropertyValue -Path 'HKLM:\\System\\CurrentControlSet\\Control\\SecurePipeServers\\Winreg\\AllowedExactPaths' -Name 'Machine';
+        arg = f'''
+        Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'
         '''
-
-        arg = ""
-
         stdout, stderr, rc = win_client.run_executable(
             "powershell.exe", arguments=arg)
 
         output = stdout.decode("utf-8").replace('\r\n', '')
 
-        # Convert bytes to strings
-        # output = stdout.decode("utf-8").replace('\r\n', '')
-        # stderr = stderr.decode("utf-8")
-        print(f"Output: {output}")
-        # print(f"Error: {stderr}")
-        # print(f"Exit Code: {rc}")
     finally:
         win_client.remove_service()
         win_client.disconnect()
-        # return result
-        # return result
+        return output
 
 
 def compare_reg_value(ip_addr, actual_value_list, data_dict):

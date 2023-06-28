@@ -7,7 +7,7 @@ from multiprocessing import Pool, Manager
 from openpyxl import load_workbook
 
 from getPwdPolicy import get_pwd_policy_actual_value, compare_pwd_policy
-from getRegValue import get_registry_actual_value, compare_reg_value
+from getRegValue import get_registry_actual_value, compare_reg_value, get_reg_value
 from getLockoutPolicy import get_lockout_policy_actual_value, compare_lockout_policy
 from getUserRights import get_user_rights_actual_value, compare_user_rights
 from getCheckAccount import get_check_account_actual_value, compare_check_account
@@ -29,18 +29,6 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 
 logger.addHandler(handler)
-
-
-def checkOS():
-    info = platform.uname()
-    os_version = info.system + info.release
-    logger.info(f"Operating System Version: {os_version}")
-    logging.info(f"Operating System Version: {os_version}")
-
-    if os_version != "Windows10":
-        logger.error("Incorrect OS")
-        logging.error("Incorrect OS")
-        exit()
 
 
 def gen_ps_args(data_dict):
@@ -118,7 +106,6 @@ def gen_ps_args(data_dict):
 
                     elif "Administrator account lockout" in description:
                         subcategory = ''
-                        # result_lists.append("Manual")
 
                     elif "Force logoff when logon hours expire" in description:
                         subcategory = 'ForceLogoffWhenHourExpire ='
@@ -481,6 +468,9 @@ def read_file(fname):
 
 def save_file(out_fname, data_dict_list):
 
+    if data_dict_list == []:
+        return
+
     all_frames = []
 
     for data_dict in data_dict_list:
@@ -560,12 +550,24 @@ def configurations(config_fname):
     versions = configs['Windows Version'].values
 
     for idx, val in enumerate(ips):
-        # ip_dict[val] = [usernames[idx], passwords[idx], versions[idx]]
-        ip_list.append([ips[idx], usernames[idx],
-                       passwords[idx], versions[idx]])
+        ip = [ips[idx], usernames[idx],
+              passwords[idx], versions[idx]]
+        os = getOS(ip)
+
+        if os == versions[idx]:
+            ip_list.append(ip)
+        else:
+            print(
+                f"IP: {ip[0]} | Invalid version | Expected: {ip[3]} | Actual: {os}")
 
     # return ip_dict
     return ip_list
+
+
+def getOS(ip):
+    reg_key = 'HKLM:\Software\Microsoft\Windows Nt\Currentversion'
+    reg_item = 'ProductName'
+    return str(get_reg_value(ip, reg_key, reg_item)).strip()
 
 
 def run(ip, data_dict):
@@ -597,8 +599,11 @@ if __name__ == '__main__':
     start_t0 = time.time()
 
     # read configurations
-    config_fname = 'src\config.xlsx'
+    config_fname = 'config\config.xlsx'
     ip_list = configurations(config_fname)
+
+    for i in ip_list:
+        print(f"IP: {i[0]} - {i[3]} loaded")
 
     # read input file
     src_fname = 'src\win10_v11.xlsx'
