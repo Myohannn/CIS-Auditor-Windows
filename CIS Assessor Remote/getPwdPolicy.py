@@ -118,7 +118,7 @@ def compare_pwd_policy(ip_addr, actual_value_list, data_dict):
                     pass_result = False
 
             elif "Administrator account lockout" in description:
-                result_lists.append("Manual")
+                result_lists.append("MANUAL")
                 continue
 
             elif "Force logoff when logon hours expire" in description:
