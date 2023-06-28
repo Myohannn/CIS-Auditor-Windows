@@ -91,16 +91,14 @@ Note: Windows 10 disables ADMIN$ by default. For all other operating systems, th
     5. 2.3.10.8: Remove " && "
     6. 2.3.10.11: Value Data "" → Null
     7. 19.1.3.3: ^(900|[1-9][0-9]|[1-8][0-9]{2})$ → [0..900]
-3. LOCKOUT_POLICY
-    1. Manually modify all expexted values 
-4. CHECK_ACCOUNT: 
+3. CHECK_ACCOUNT (automated): 
     1. 2.3.1.2: Disabled → No
     2. 2.3.1.4: \b[Aa]dmin(istrator)? → Administrator
-5.  BANNER_CHECK:
+4.  BANNER_CHECK (automated):
     1. 2.3.7.5 & 2.3.7.6: Manually modify expexted value to “Blank Message”
-6. ANONYMOUS_SID_SETTING: 
+5. ANONYMOUS_SID_SETTING (automated): 
     1. 2.3.10.1 Manually modify expexted value: Disabled → 0
-7. REG_CHECK:
+6. REG_CHECK (automated):
     1. 18.9.19.5 Replace "Value Data" and "Reg Key" 
   
 ***
