@@ -1,8 +1,34 @@
-# CIS Benchmark Assessor
+# Security Audit Project
 
-### Available version:
-- [x] Windows 10
+This project is a customizable multiprocessing remote security audit program based on the [CIS benchmark](https://www.cisecurity.org/cis-benchmarks).
 
+### Supports Windows versions:
+- [x] Windows 10 Enterprise
+- [x] Windows 11 Enterprise
+- [x] Windows Server 2016
+- [x] Windows Server 2019
+- [x] Windows Server 2022
+
+## Project Workflow
+
+This section describes the high-level workflow of the security audit program.
+![image](https://github.com/Myohannn/CIS_Benchmark_Assessor_Win/assets/60417289/72330883-3713-4d90-8446-c6cbe0ce239c)
+
+
+1. **Download Latest Audit File**: The program begins by downloading the latest CIS benchmark .audit file from [Nessus](https://www.tenable.com/audits/search?q=type%3A%28CIS%29+AND+display_name%3A%28L1%29+AND+plugin%3A%28Windows%29&sort=&page=1). This ensures that the program is always using the most up-to-date security benchmarks.
+
+2. **Convert .audit file to Excel File**: Next, the program converts the .audit file into an Excel file. This allows for easier manipulation and customization of the audit policies.
+
+3. **Customize Audit Policies**: With the benchmarks in Excel format, you can easily customize the audit policies to suit your specific needs. The program can then read this customized set of audit policies when performing the security audit.
+
+4. **Configure Server Details**: After customizing the audit policies, you'll need to provide the program with the details of the servers you want to audit. This includes server addresses, login credentials, and select the os version of the target server.
+
+5. **Run the Program**: With the audit policies and server details configured, you're ready to run the program. The program will connect to the specified servers and perform the security audit based on your customized policies.
+
+6. **Review Results**: After the program has completed the audit, you can review the results. These will tell you whether each audit check passed or failed, and provide you with any relevant information about potential security issues.
+
+
+***
 ## Powershell commands
 
 REGISTRY_SETTING / BANNER_CHECK / REG_CHECK
