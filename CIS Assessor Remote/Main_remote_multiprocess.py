@@ -1,7 +1,8 @@
 import pandas as pd
-import platform
 import time
 import logging
+import argparse
+
 
 from multiprocessing import Pool, Manager
 from openpyxl import load_workbook
@@ -439,7 +440,7 @@ def get_actual_values(ip, ps_args_dict, data_dict):
     return new_dict
 
 
-def read_file(fname):
+def read_file(win_version, input_fname):
 
     data_dict = {
         "PASSWORD_POLICY": [],
@@ -452,6 +453,23 @@ def read_file(fname):
         "AUDIT_POLICY_SUBCATEGORY": [],
         "REG_CHECK": [],
     }
+
+    version_dict = {
+        'Windows 10 Enterprise': 'src\Audit\win10_enterprise_v1.xlsx',
+        'Windows 11 Enterprise': 'src\Audit\win11_enterprise_v1.xlsx',
+        'Windows Server 2016': 'src\Audit\win_server_2016_ms_v1.xlsx',
+        'Windows Server 2019': 'src\Audit\win_server_2019_ms_v1.xlsx',
+        'Windows Server 2022': 'src\Audit\win_server_2022_ms_v1.xlsx',
+
+    }
+
+    # for ver in ip_list[3]:
+    #     fname = version_dict[ver]
+
+    if input_fname:
+        fname = input_fname
+    else:
+        fname = version_dict[win_version]
 
     xl = pd.ExcelFile(fname)
     # df = xl.parse(sheet_name=0)
@@ -552,13 +570,16 @@ def configurations(config_fname):
     for idx, val in enumerate(ips):
         ip = [ips[idx], usernames[idx],
               passwords[idx], versions[idx]]
-        os = getOS(ip)
 
-        if os == versions[idx]:
-            ip_list.append(ip)
-        else:
-            print(
-                f"IP: {ip[0]} | Invalid version | Expected: {ip[3]} | Actual: {os}")
+        ip_list.append(ip)
+
+        # verify os
+        # os = getOS(ip)
+        # if os == versions[idx]:
+        #     ip_list.append(ip)
+        # else:
+        #     print(
+        #         f"IP: {ip[0]} | Invalid version | Expected: {ip[3]} | Actual: {os}")
 
     # return ip_dict
     return ip_list
@@ -596,19 +617,42 @@ def run(ip, data_dict):
 
 if __name__ == '__main__':
 
+    my_parser = argparse.ArgumentParser(
+        description='A Customizable Multiprocessing Remote Security Audit Program')
+
+    # Add the arguments
+    my_parser.add_argument('--config',
+                           type=str,
+                           required=True,
+                           help='The configuration file')
+
+    my_parser.add_argument('--output',
+                           type=str,
+                           required=True,
+                           help='The output file')
+
+    my_parser.add_argument('--input',
+                           type=str,
+                           help='The input file (optional)')
+
+    # Execute parse_args()
+    args = my_parser.parse_args()
+
+    print('Configuration file:', args.config)
+    print('Output file:', args.output)
+    print('Input file:', args.input)
+
     start_t0 = time.time()
 
     # read configurations
-    config_fname = 'config\config.xlsx'
-    ip_list = configurations(config_fname)
+    ip_list = configurations(args.config)
 
     for i in ip_list:
         print(f"IP: {i[0]} - {i[3]} loaded")
 
-    # read input file
-    src_fname = 'src\win10_v11.xlsx'
-    # src_fname = 'src\win10_v10_test.xlsx'
-    data_dict = read_file(src_fname)
+    win_version = ip_list[0][3]
+
+    data_dict = read_file(win_version, args.input)
 
     with Manager() as manager:
         # initialize shared dictionary with data_dict
@@ -619,8 +663,7 @@ if __name__ == '__main__':
                 run, [(ip, shared_data_dict) for ip in ip_list])
 
     # write output file
-    out_fname = r"out\remote_output_v12.xlsx"
-    save_file(out_fname, results)
+    save_file(args.output, results)
 
     start_t = time.time()
 

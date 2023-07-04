@@ -60,6 +60,10 @@ def get_check_account_actual_value(args_list, ip):
             # get check account value
             for arg in args_list:
 
+                if arg == '':
+                    actual_value_list.append("Error")
+                    continue
+
                 stdout, stderr, rc = win_client.run_executable(
                     "powershell.exe", arguments=arg)
 
