@@ -1,4 +1,4 @@
-# Security Audit Project
+# CIS Auditor Windows
 
 This project provides a customizable, multiprocessing, remote security auditing program. It enables users to adapt [CIS benchmark audit policies](https://www.cisecurity.org/cis-benchmarks) to their unique needs, perform comprehensive security audits remotely, and leverage multiprocessing capabilities for efficient auditing. Aimed at overcoming the limitations of existing security audit solutions, this project offers an efficient, flexible, and scalable approach to system security auditing.
 
