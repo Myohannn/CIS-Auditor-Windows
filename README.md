@@ -1,13 +1,33 @@
 # Security Audit Project
 
-This project is a customizable multiprocessing remote security audit program based on the [CIS benchmark](https://www.cisecurity.org/cis-benchmarks).
+This project provides a customizable, multiprocessing, remote security auditing program. It enables users to adapt [CIS benchmark audit policies](https://www.cisecurity.org/cis-benchmarks) to their unique needs, perform comprehensive security audits remotely, and leverage multiprocessing capabilities for efficient auditing. Aimed at overcoming the limitations of existing security audit solutions, this project offers an efficient, flexible, and scalable approach to system security auditing.
 
-### Supports Windows versions:
+Supports Windows versions:
 - [x] Windows 10 Enterprise
 - [x] Windows 11 Enterprise
 - [x] Windows Server 2016
 - [x] Windows Server 2019
 - [x] Windows Server 2022
+
+## Addressing the Challenges
+
+Existing security audit solutions often face the following limitations, which this project seeks to overcome:
+
+1. **Inflexibility**: Solutions like Nessus do not offer the ability to tailor audit policies, imposing a "one-size-fits-all" approach. This can be inadequate for users with specific security requirements. Our project provides flexibility, allowing customized audit policies that can better address individual needs.
+
+2. **Performance Bottlenecks**: Many current systems can be slow and often require post-processing, which lengthens auditing times and hinders efficiency. Our project addresses these bottlenecks by streamlining processes, offering improved speed and efficiency.
+
+3. **Server Dependencies**: A common challenge with many audit solutions is their dependency on additional server resources, which adds to system complexity and potential scalability issues. Our project minimizes server dependencies, simplifying the system architecture and enhancing scalability.
+
+## Features
+
+This project introduces a customizable, multiprocessing, remote security audit program with the following key features:
+
+1. **Customizable CIS Benchmark Audit Policies**: This solution allows users to customize the highly-regarded CIS benchmark audit policies according to their unique security needs. This ensures a more targeted and effective auditing process.
+
+2. **Remote Assessment Capabilities**: The program's remote assessment functionality enables users to conduct comprehensive security audits from virtually any location, ensuring flexibility and ease of use.
+
+3. **Multiprocessing Functionality**: By facilitating simultaneous execution of multiple processes, this program significantly speeds up the audit process. This feature not only saves valuable time but also ensures thoroughness and accuracy in the security audit.
 
 ## Project Workflow
 
