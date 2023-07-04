@@ -38,14 +38,16 @@ USER_RIGHTS_POLICY
 LOCKOUT_POLICY
 
     ```powershell
-    net account
+    net accounts
+    net accounts | Select-String -Pattern "{subcategory}"
     ```
     
 CHECK_ACCOUNT
 
     ```powershell
     net user guest
-    net useradministrator
+    net user administrator
+    net user administrator | select-string -pattern "{subcategory}"
     ```
     
 AUDIT_POLICY_SUBCATEGORY
