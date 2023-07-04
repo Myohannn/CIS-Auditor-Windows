@@ -5,7 +5,7 @@
 
 ## Powershell commands
 
-- [x] REGISTRY_SETTING / BANNER_CHECK / REG_CHECK
+REGISTRY_SETTING / BANNER_CHECK / REG_CHECK
 
     ``` powershell
     Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'
@@ -13,7 +13,7 @@
     e.g., Get-ItemPropertyValue -Path 'HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion' -Name 'ProductName'
     ```
     
-- [ ]  PASSWORD_POLICY / ANONYMOUS_SID_SETTING
+PASSWORD_POLICY / ANONYMOUS_SID_SETTING
       
     ``` powershell
     if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp }
@@ -24,7 +24,7 @@
     e.g., $secpol | Select-String -Pattern "PasswordHistory"
     ```
     
-- [ ]  USER_RIGHTS_POLICY
+USER_RIGHTS_POLICY
 
     ``` powershell
     if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp }
@@ -35,20 +35,20 @@
     e.g., $secpol | Select-String -Pattern "SeNetworkLogonRight"
     ```
     
-- [ ]  LOCKOUT_POLICY
+LOCKOUT_POLICY
 
     ```powershell
     net account
     ```
     
-- [ ]  CHECK_ACCOUNT
+CHECK_ACCOUNT
 
     ```powershell
     net user guest
     net useradministrator
     ```
     
-- [ ]  AUDIT_POLICY_SUBCATEGORY
+AUDIT_POLICY_SUBCATEGORY
       
     ```powershell
     auditpol /get /subcategory:'{subcategory}'
