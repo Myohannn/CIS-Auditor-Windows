@@ -66,14 +66,14 @@ def gen_ps_args(data_dict):
                 arg = f"Write-Output '====';Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
                 reg_value_args.append(arg)
 
-                if len(reg_value_args) == 50:
-                    reg_value_args_list.append(
-                        ';'.join(reg_value_args))
-                    reg_value_args = []
+                # if len(reg_value_args) == 50:
+                #     reg_value_args_list.append(
+                #         ';'.join(reg_value_args))
+                #     reg_value_args = []
 
             reg_value_args_list.append(';'.join(reg_value_args))
 
-            ps_args_dict[key] = reg_value_args_list
+            ps_args_dict[key] = ';'.join(reg_value_args)
 
             continue
 
@@ -113,20 +113,20 @@ def gen_ps_args(data_dict):
                     subcategory = 'ForceLogoffWhenHourExpire ='
 
                 else:
-                    actual_value_list.append("")
+                    pwd_policy_args.append("")
 
                 arg = f"Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{subcategory}'"
 
                 pwd_policy_args.append(arg)
 
-                if len(pwd_policy_args) == 50:
-                    pwd_policy_args_list.append(
-                        ';'.join(pwd_policy_args))
-                    pwd_policy_args = []
+                # if len(pwd_policy_args) == 50:
+                #     pwd_policy_args_list.append(
+                #         ';'.join(pwd_policy_args))
+                #     pwd_policy_args = []
 
             pwd_policy_args_list.append(';'.join(pwd_policy_args))
 
-            ps_args_dict[key] = pwd_policy_args_list
+            ps_args_dict[key] = ';'.join(pwd_policy_args)
 
             continue
 
@@ -141,19 +141,19 @@ def gen_ps_args(data_dict):
 
                 if "Account lockout duration" in description:
                     lockout_policy_args.append(
-                        "net accounts | select-string -pattern 'Lockout duration'")
+                        "Write-Output '====';net accounts | select-string -pattern 'Lockout duration'")
 
                 elif "Account lockout threshold" in description:
                     lockout_policy_args.append(
-                        "net accounts | select-string -pattern 'Lockout threshold'")
+                        "Write-Output '====';net accounts | select-string -pattern 'Lockout threshold'")
 
                 elif "Reset account lockout counter" in description:
                     lockout_policy_args.append(
-                        "net accounts | select-string -pattern 'Lockout observation window'")
+                        "Write-Output '====';net accounts | select-string -pattern 'Lockout observation window'")
                 else:
                     lockout_policy_args.append("")
 
-            ps_args_dict[key] = lockout_policy_args
+            ps_args_dict[key] = ';'.join(lockout_policy_args)
 
         elif key == "USER_RIGHTS_POLICY":
 
@@ -169,14 +169,14 @@ def gen_ps_args(data_dict):
 
                 user_rights_args.append(arg)
 
-                if len(user_rights_args) == 50:
-                    user_rights_args_list.append(
-                        ';'.join(user_rights_args))
-                    user_rights_args = []
+                # if len(user_rights_args) == 50:
+                #     user_rights_args_list.append(
+                #         ';'.join(user_rights_args))
+                #     user_rights_args = []
 
             user_rights_args_list.append(';'.join(user_rights_args))
 
-            ps_args_dict[key] = user_rights_args_list
+            ps_args_dict[key] = ';'.join(user_rights_args)
 
         elif key == "CHECK_ACCOUNT":
             check_account_args = []
@@ -188,19 +188,19 @@ def gen_ps_args(data_dict):
 
                 if "Guest account status" in description:
                     check_account_args.append(
-                        "net user guest | select-string -pattern 'Account active'")
+                        "Write-Output '===='; net user guest | select-string -pattern 'Account active'")
 
                 elif "Rename administrator account" in description:
                     check_account_args.append(
-                        "net user administrator | select-string -pattern 'User name'")
+                        "Write-Output '===='; net user administrator | select-string -pattern 'User name'")
 
                 elif "Rename guest account" in description:
                     check_account_args.append(
-                        "net user guest | select-string -pattern 'User name'")
+                        "Write-Output '===='; net user guest | select-string -pattern 'User name'")
                 else:
                     check_account_args.append("")
 
-            ps_args_dict[key] = check_account_args
+            ps_args_dict[key] = ';'.join(check_account_args)
 
         elif key == "BANNER_CHECK":
             banner_check_args = []
@@ -220,14 +220,14 @@ def gen_ps_args(data_dict):
                 arg = f"Write-Output '====';Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
                 banner_check_args.append(arg)
 
-                if len(banner_check_args) == 50:
-                    banner_check_args_list.append(
-                        ';'.join(banner_check_args))
-                    banner_check_args = []
+                # if len(banner_check_args) == 50:
+                #     banner_check_args_list.append(
+                #         ';'.join(banner_check_args))
+                #     banner_check_args = []
 
             banner_check_args_list.append(';'.join(banner_check_args))
 
-            ps_args_dict[key] = banner_check_args_list
+            ps_args_dict[key] = ';'.join(banner_check_args)
 
         elif key == "ANONYMOUS_SID_SETTING":
 
@@ -242,21 +242,19 @@ def gen_ps_args(data_dict):
 
                 if "Allow anonymous SID/Name translation" in description:
                     subcategory = 'LSAAnonymousNameLookup ='
-                else:
-                    actual_value_list.append("")
 
                 arg = f"Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{subcategory}'"
 
                 anonymous_sid_args.append(arg)
 
-                if len(anonymous_sid_args) == 50:
-                    anonymous_sid_args_list.append(
-                        ';'.join(anonymous_sid_args))
-                    anonymous_sid_args = []
+                # if len(anonymous_sid_args) == 50:
+                #     anonymous_sid_args_list.append(
+                #         ';'.join(anonymous_sid_args))
+                #     anonymous_sid_args = []
 
             anonymous_sid_args_list.append(';'.join(anonymous_sid_args))
 
-            ps_args_dict[key] = anonymous_sid_args_list
+            ps_args_dict[key] = ';'.join(anonymous_sid_args)
 
             continue
 
@@ -273,14 +271,14 @@ def gen_ps_args(data_dict):
 
                 audit_policy_args.append(arg)
 
-                if len(audit_policy_args) == 50:
-                    audit_policy_args_list.append(
-                        ';'.join(audit_policy_args))
-                    audit_policy_args = []
+                # if len(audit_policy_args) == 50:
+                #     audit_policy_args_list.append(
+                #         ';'.join(audit_policy_args))
+                #     audit_policy_args = []
 
             audit_policy_args_list.append(';'.join(audit_policy_args))
 
-            ps_args_dict[key] = audit_policy_args_list
+            ps_args_dict[key] = ';'.join(audit_policy_args)
 
         elif key == "REG_CHECK":
             reg_check_args = []
@@ -304,7 +302,7 @@ def gen_ps_args(data_dict):
 
             reg_check_args_list.append(';'.join(reg_check_args))
 
-            ps_args_dict[key] = reg_check_args_list
+            ps_args_dict[key] = ';'.join(reg_check_args)
 
         elif key == "WMI_POLICY":
             wmi_policy_args = []
@@ -320,7 +318,7 @@ def gen_ps_args(data_dict):
 
             wmi_policy_args_list.append(';'.join(wmi_policy_args))
 
-            ps_args_dict[key] = wmi_policy_args_list
+            ps_args_dict[key] = ';'.join(wmi_policy_args)
 
         else:
             continue
@@ -471,8 +469,7 @@ def get_actual_values(ip, ps_args_dict, data_dict):
     return new_dict
 
 
-def read_file(win_version, input_fname):
-
+def read_file(fname):
     data_dict = {
         "PASSWORD_POLICY": [],
         "REGISTRY_SETTING": [],
@@ -485,23 +482,6 @@ def read_file(win_version, input_fname):
         "REG_CHECK": [],
         "WMI_POLICY": []
     }
-
-    version_dict = {
-        'Windows 10 Enterprise': 'src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx',
-        'Windows 11 Enterprise': 'src\Audit\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.xlsx',
-        'Windows Server 2016': 'src\Audit\CIS_Microsoft_Windows_Server_2016_Benchmark_v2.0.0_L1_MS.xlsx',
-        'Windows Server 2019': 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_MS.xlsx',
-        'Windows Server 2022': 'src\Audit\CIS_Microsoft_Windows_Server_2022_Benchmark_v2.0.0_L1_MS.xlsx',
-
-    }
-
-    # for ver in ip_list[3]:
-    #     fname = version_dict[ver]
-
-    if input_fname:
-        fname = input_fname
-    else:
-        fname = version_dict[win_version]
 
     xl = pd.ExcelFile(fname)
     # df = xl.parse(sheet_name=0)
@@ -617,12 +597,6 @@ def configurations(config_fname):
     return ip_list
 
 
-def getOS(ip):
-    reg_key = 'HKLM:\Software\Microsoft\Windows Nt\Currentversion'
-    reg_item = 'ProductName'
-    return str(get_reg_value(ip, reg_key, reg_item)).strip()
-
-
 def run(ip, data_dict):
     logger.info(f'IP: {ip[0]} scanning start....')
     logging.info(f'IP: {ip[0]} scanning start....')
@@ -649,58 +623,65 @@ def run(ip, data_dict):
 
 if __name__ == '__main__':
 
-    my_parser = argparse.ArgumentParser(
-        description='A Customizable Multiprocessing Remote Security Audit Program')
+    # my_parser = argparse.ArgumentParser(
+    #     description='A Customizable Multiprocessing Remote Security Audit Program')
 
-    # Add the arguments
-    my_parser.add_argument('--config',
-                           type=str,
-                           required=True,
-                           help='The configuration file')
+    # # Add the arguments
+    # my_parser.add_argument('--config',
+    #                        type=str,
+    #                        required=True,
+    #                        help='The configuration file')
 
-    my_parser.add_argument('--output',
-                           type=str,
-                           required=True,
-                           help='The output file')
+    # my_parser.add_argument('--output',
+    #                        type=str,
+    #                        required=True,
+    #                        help='The output file')
 
-    my_parser.add_argument('--input',
-                           type=str,
-                           help='The input file (optional)')
+    # my_parser.add_argument('--input',
+    #                        type=str,
+    #                        help='The input file (optional)')
 
-    # Execute parse_args()
-    args = my_parser.parse_args()
+    # # Execute parse_args()
+    # args = my_parser.parse_args()
 
-    print('Configuration file:', args.config)
-    print('Output file:', args.output)
-    print('Input file:', args.input)
+    # print('Configuration file:', args.config)
+    # print('Output file:', args.output)
+    # print('Input file:', args.input)
 
-    start_t0 = time.time()
+    # start_t0 = time.time()
 
-    # read configurations
-    ip_list = configurations(args.config)
+    # # read configurations
+    # ip_list = configurations(args.config)
 
-    for i in ip_list:
-        print(f"IP: {i[0]} - {i[3]} loaded")
+    # for i in ip_list:
+    #     print(f"IP: {i[0]} - {i[3]} loaded")
 
-    win_version = ip_list[0][3]
+    # win_version = ip_list[0][3]
 
-    data_dict = read_file(win_version, args.input)
+    fname = "src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx"
 
-    with Manager() as manager:
-        # initialize shared dictionary with data_dict
-        shared_data_dict = manager.dict(data_dict)
+    data_dict = read_file(fname)
 
-        with Pool(processes=4) as pool:
-            results = pool.starmap(
-                run, [(ip, shared_data_dict) for ip in ip_list])
+    ps_args_dict = gen_ps_args(data_dict)
 
-    # write output file
-    save_file(args.output, results)
+    # print(ps_args_dict)
+    count = 1
+    with open('my_script.ps1', 'w') as f:
+        for key in ps_args_dict:
+            for cmd in ps_args_dict[key]:
+                f.write(cmd)
+            f.write(";")
+                # print(cmd)
 
-    start_t = time.time()
+    print("Done")
 
-    end_t0 = time.time()
+    # # write output file
+    # save_file(args.output, results)
 
-    running_t0 = end_t0 - start_t0
-    logger.info(f"The script ran for {running_t0} seconds")
-    logging.info(f"The script ran for {running_t0} seconds")
+    # start_t = time.time()
+
+    # end_t0 = time.time()
+
+    # running_t0 = end_t0 - start_t0
+    # logger.info(f"The script ran for {running_t0} seconds")
+    # logging.info(f"The script ran for {running_t0} seconds")

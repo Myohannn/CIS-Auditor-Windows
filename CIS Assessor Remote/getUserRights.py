@@ -181,47 +181,47 @@ def compare_user_rights(ip_addr, actual_value_list, data_dict):
 
         pass_result = True
 
-        if val == 1:
+        # if val == 1
 
-            right_type = str(right_type_values[idx])
-            expected_value = str(value_data_values[idx])
-            actual_value = actual_value_list[idx]
+        right_type = str(right_type_values[idx])
+        expected_value = str(value_data_values[idx])
+        actual_value = actual_value_list[idx]
 
-            try:
-                result = compare_user_right_result(
-                    right_type, expected_value, actual_value)
-                if result:
-                    pass_result = True
-                else:
-                    pass_result = False
-
-            except (configparser.NoOptionError, KeyError):
-                null_value_list = ['SeTrustedCredManAccessPrivilege',
-                                   'SeTcbPrivilege',
-                                   'SeCreateTokenPrivilege',
-                                   'SeCreatePermanentPrivilege',
-                                   'SeEnableDelegationPrivilege',
-                                   'SeLockMemoryPrivilege',
-                                   'SeReLabelPrivilege'
-                                   ]
-                if right_type in null_value_list:
-                    pass_result = True
-                else:
-                    actual_value = "Invalid key"
-                    pass_result = False
-
-            if pass_result:
-                print(
-                    f"{ip_addr} | {idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
-                result_lists.append("PASSED")
+        try:
+            result = compare_user_right_result(
+                right_type, expected_value, actual_value)
+            if result:
+                pass_result = True
             else:
-                print(
-                    f"{ip_addr} | {idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
-                result_lists.append("FAILED")
+                pass_result = False
 
+        except (configparser.NoOptionError, KeyError):
+            null_value_list = ['SeTrustedCredManAccessPrivilege',
+                               'SeTcbPrivilege',
+                               'SeCreateTokenPrivilege',
+                               'SeCreatePermanentPrivilege',
+                               'SeEnableDelegationPrivilege',
+                               'SeLockMemoryPrivilege',
+                               'SeReLabelPrivilege'
+                               ]
+            if right_type in null_value_list:
+                pass_result = True
+            else:
+                actual_value = "Invalid key"
+                pass_result = False
+
+        if pass_result:
+            print(
+                f"{ip_addr} | {idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("PASSED")
         else:
-            actual_value_list.append("")
-            result_lists.append("")
+            print(
+                f"{ip_addr} | {idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("FAILED")
+
+        # else:
+        #     actual_value_list.append("")
+        #     result_lists.append("")
 
     col_name1 = ip_addr + ' | Actual Value'
     col_name2 = ip_addr + ' | Result'
@@ -230,4 +230,80 @@ def compare_user_rights(ip_addr, actual_value_list, data_dict):
     df[col_name2] = result_lists
 
     # data_dict["USER_RIGHTS_POLICY"] = df
+    return df
+
+
+def compare_user_rights_local(data_dict):
+    # user rights
+    df = data_dict["USER_RIGHTS_POLICY"]
+    checklist_values = df['Checklist'].values
+    idx_values = df['Index'].values
+    value_data_values = df['Value Data'].values
+    right_type_values = df['Right type'].values
+    actual_value_list = df['Actual Value'].values
+
+    # actual_value_list = actual_value_dict["USER_RIGHTS_POLICY"]
+    result_lists = []
+
+    for idx, val in enumerate(checklist_values):
+
+        pass_result = True
+
+        # if val == 1
+
+        right_type = str(right_type_values[idx])
+        expected_value = str(value_data_values[idx])
+        actual_value = actual_value_list[idx].strip()
+        actual_value = actual_value.split("=")[-1].strip()
+        actual_value_list[idx] = actual_value
+
+
+        try:
+            # print("Goodd")
+            result = True
+            print(result)
+            result = compare_user_right_result(
+                right_type, expected_value, actual_value)
+            if result:
+                pass_result = True
+            else:
+                pass_result = False
+
+
+        except (configparser.NoOptionError, KeyError):
+            null_value_list = ['SeTrustedCredManAccessPrivilege',
+                               'SeTcbPrivilege',
+                               'SeCreateTokenPrivilege',
+                               'SeCreatePermanentPrivilege',
+                               'SeEnableDelegationPrivilege',
+                               'SeLockMemoryPrivilege',
+                               'SeReLabelPrivilege'
+                               ]
+            if right_type in null_value_list:
+                pass_result = True
+            else:
+                actual_value = "Invalid key"
+                pass_result = False
+
+
+        if pass_result:
+            print(
+                f"{idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("PASSED")
+        else:
+            print(
+                f"{idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("FAILED")
+
+        # else:
+        #     actual_value_list.append("")
+        #     result_lists.append("")
+
+    col_name1 = 'ip_addr' + ' | Actual Value'
+    col_name2 = 'ip_addr' + ' | Result'
+
+    df = df.rename(columns={'Actual Value': col_name1})
+    df[col_name1] = actual_value_list
+    df[col_name2] = result_lists
+
     return df

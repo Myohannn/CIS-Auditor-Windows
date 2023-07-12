@@ -77,65 +77,65 @@ def compare_reg_value(ip_addr, actual_value_list, data_dict):
 
         pass_result = False
 
-        if val == 1:
+        # if val == 1
 
-            expected_value = str(value_data_values[idx]).lower()
+        expected_value = str(value_data_values[idx]).lower()
 
-            if actual_value_list[idx] == "":
-                actual_value_list[idx] = "Null"
+        if actual_value_list[idx] == "":
+            actual_value_list[idx] = "Null"
 
-            actual_value = actual_value_list[idx].lower()
+        actual_value = actual_value_list[idx].lower()
 
-            if actual_value == 'null':
-                if idx_values[idx] == "2.3.10.6" or idx_values[idx] == "5.7" or reg_option[idx] == 'CAN_BE_NULL':
-                    pass_result = True
-            else:
-                if idx_values[idx] == "2.3.10.7" or idx_values[idx] == "2.3.10.8":
-                    expected_value = expected_value.lower().split(" && ")[
-                        0].strip()
-                    actual_value = [s.lower() for s in actual_value]
-
-                    actual_value = ''.join(actual_value)
-
-                    if expected_value == actual_value:
-                        pass_result = True
-
-                elif "||" in expected_value:
-                    expected_value = expected_value.split(" || ")
-                    if str(actual_value) in expected_value:
-                        pass_result = True
-
-                elif "[" in expected_value:
-                    vals = expected_value.strip("[]").split("..")
-                    min_val = vals[0]
-                    max_val = vals[1]
-
-                    if min_val == "min":
-                        if int(actual_value) <= int(max_val):
-                            pass_result = True
-                    elif max_val == "max":
-                        if int(actual_value) >= int(min_val):
-                            pass_result = True
-                    else:
-                        if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
-                            pass_result = True
-
-                else:
-                    if str(expected_value) == str(actual_value):
-                        pass_result = True
-
-            if pass_result:
-                print(
-                    f"{ip_addr} | {idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
-                result_lists.append("PASSED")
-            else:
-                print(
-                    f"{ip_addr} | {idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
-                result_lists.append("FAILED")
-
+        if actual_value == 'null':
+            if idx_values[idx] == "2.3.10.6" or idx_values[idx] == "5.7" or reg_option[idx] == 'CAN_BE_NULL':
+                pass_result = True
         else:
-            actual_value_list.append("")
-            result_lists.append("")
+            if idx_values[idx] == "2.3.10.7" or idx_values[idx] == "2.3.10.8":
+                expected_value = expected_value.lower().split(" && ")[
+                    0].strip()
+                actual_value = [s.lower() for s in actual_value]
+
+                actual_value = ''.join(actual_value)
+
+                if expected_value == actual_value:
+                    pass_result = True
+
+            elif "||" in expected_value:
+                expected_value = expected_value.split(" || ")
+                if str(actual_value) in expected_value:
+                    pass_result = True
+
+            elif "[" in expected_value:
+                vals = expected_value.strip("[]").split("..")
+                min_val = vals[0]
+                max_val = vals[1]
+
+                if min_val == "min":
+                    if int(actual_value) <= int(max_val):
+                        pass_result = True
+                elif max_val == "max":
+                    if int(actual_value) >= int(min_val):
+                        pass_result = True
+                else:
+                    if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                        pass_result = True
+
+            else:
+                if str(expected_value) == str(actual_value):
+                    pass_result = True
+
+        if pass_result:
+            print(
+                f"{ip_addr} | {idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("PASSED")
+        else:
+            print(
+                f"{ip_addr} | {idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("FAILED")
+
+        # else:
+        #     actual_value_list.append("")
+        #     result_lists.append("")
 
     col_name1 = ip_addr + ' | Actual Value'
     col_name2 = ip_addr + ' | Result'
@@ -182,3 +182,90 @@ def get_registry_actual_value(args_list, ip):
     actual_value_list.pop(0)
 
     return actual_value_list
+
+
+def compare_reg_value_local(data_dict):
+
+    # registry value
+    df = data_dict["REGISTRY_SETTING"]
+    checklist_values = df['Checklist'].values
+    idx_values = df['Index'].values
+    value_data_values = df['Value Data'].values
+    reg_option = df['Reg Option'].values
+    actual_value_list = df['Actual Value'].values
+
+    result_lists = []
+
+    for idx, val in enumerate(checklist_values):
+
+        pass_result = False
+
+        # if val == 1
+
+        expected_value = str(value_data_values[idx]).lower()
+
+        actual_value_list[idx] = actual_value_list[idx].strip()
+
+        if actual_value_list[idx] == "":
+            actual_value_list[idx] = "Null"
+
+        actual_value = actual_value_list[idx].lower()
+
+        if actual_value == 'null':
+            if idx_values[idx] == "2.3.10.6" or idx_values[idx] == "5.7" or reg_option[idx] == 'CAN_BE_NULL':
+                pass_result = True
+        else:
+            if idx_values[idx] == "2.3.10.7" or idx_values[idx] == "2.3.10.8":
+                expected_value_2 = expected_value.replace(" ", "")
+                actual_value_2 = actual_value.replace(" ", "")
+
+                if expected_value_2 == actual_value_2:
+                    pass_result = True
+
+            elif "||" in expected_value:
+                expected_value = expected_value.split(" || ")
+                if str(actual_value) in expected_value:
+                    pass_result = True
+
+            elif "[" in expected_value:
+                vals = expected_value.strip("[]").split("..")
+                min_val = vals[0]
+                max_val = vals[1]
+
+                if min_val == "min":
+                    if int(actual_value) <= int(max_val):
+                        pass_result = True
+                elif max_val == "max":
+                    if int(actual_value) >= int(min_val):
+                        pass_result = True
+                else:
+                    if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                        pass_result = True
+
+            else:
+                if str(expected_value) == str(actual_value):
+                    pass_result = True
+
+        if pass_result:
+            print(
+                f"{idx_values[idx]}: PASSED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("PASSED")
+        else:
+            print(
+                f"{idx_values[idx]}: FAILED | Expected: {expected_value} | Actual: {actual_value}")
+            result_lists.append("FAILED")
+
+        # else:
+        #     actual_value_list.append("")
+        #     result_lists.append("")
+
+    col_name1 = 'ip_addr' + ' | Actual Value'
+    col_name2 = 'ip_addr' + ' | Result'
+
+    df = df.rename(columns={'Actual Value': col_name1})
+    df[col_name1] = actual_value_list
+    df[col_name2] = result_lists
+
+    # data_dict["REGISTRY_SETTING"] = df
+
+    return df
