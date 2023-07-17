@@ -67,6 +67,7 @@ def compare_reg_value(ip_addr, actual_value_list, data_dict):
     df = data_dict["REGISTRY_SETTING"]
     checklist_values = df['Checklist'].values
     idx_values = df['Index'].values
+    description_values = df['Description'].values
     value_data_values = df['Value Data'].values
     reg_option = df['Reg Option'].values
 
@@ -80,6 +81,7 @@ def compare_reg_value(ip_addr, actual_value_list, data_dict):
         # if val == 1
 
         expected_value = str(value_data_values[idx]).lower()
+        description = description_values[idx]
 
         if actual_value_list[idx] == "":
             actual_value_list[idx] = "Null"
@@ -87,10 +89,10 @@ def compare_reg_value(ip_addr, actual_value_list, data_dict):
         actual_value = actual_value_list[idx].lower()
 
         if actual_value == 'null':
-            if idx_values[idx] == "2.3.10.6" or idx_values[idx] == "5.7" or reg_option[idx] == 'CAN_BE_NULL':
+            if reg_option[idx] == 'CAN_BE_NULL' or "Not Installed" in description or "Named Pipes that can be accessed anonymously" in description:
                 pass_result = True
         else:
-            if idx_values[idx] == "2.3.10.7" or idx_values[idx] == "2.3.10.8":
+            if "Remotely accessible registry paths" in description:
                 expected_value = expected_value.lower().split(" && ")[
                     0].strip()
                 actual_value = [s.lower() for s in actual_value]
@@ -190,6 +192,7 @@ def compare_reg_value_local(data_dict):
     df = data_dict["REGISTRY_SETTING"]
     checklist_values = df['Checklist'].values
     idx_values = df['Index'].values
+    description_values = df['Description'].values
     value_data_values = df['Value Data'].values
     reg_option = df['Reg Option'].values
     actual_value_list = df['Actual Value'].values
@@ -203,6 +206,7 @@ def compare_reg_value_local(data_dict):
         # if val == 1
 
         expected_value = str(value_data_values[idx]).lower()
+        description = description_values[idx]
 
         actual_value_list[idx] = actual_value_list[idx].strip()
 
@@ -212,10 +216,10 @@ def compare_reg_value_local(data_dict):
         actual_value = actual_value_list[idx].lower()
 
         if actual_value == 'null':
-            if idx_values[idx] == "2.3.10.6" or idx_values[idx] == "5.7" or reg_option[idx] == 'CAN_BE_NULL':
+            if reg_option[idx] == 'CAN_BE_NULL' or "Not Installed" in description or "Named Pipes that can be accessed anonymously" in description:
                 pass_result = True
         else:
-            if idx_values[idx] == "2.3.10.7" or idx_values[idx] == "2.3.10.8":
+            if "Remotely accessible registry paths" in description:
                 expected_value_2 = expected_value.replace(" ", "")
                 actual_value_2 = actual_value.replace(" ", "")
 

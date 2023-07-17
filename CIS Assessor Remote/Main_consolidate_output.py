@@ -72,51 +72,6 @@ def get_actual_values(data_dict):
     return new_dict
 
 
-def read_file(win_version, input_fname):
-
-    data_dict = {
-        "PASSWORD_POLICY": [],
-        "REGISTRY_SETTING": [],
-        "LOCKOUT_POLICY": [],
-        "USER_RIGHTS_POLICY": [],
-        "CHECK_ACCOUNT": [],
-        "BANNER_CHECK": [],
-        "ANONYMOUS_SID_SETTING": [],
-        "AUDIT_POLICY_SUBCATEGORY": [],
-        "REG_CHECK": [],
-        "WMI_POLICY": []
-    }
-
-    version_dict = {
-        'Windows 10 Enterprise': 'src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx',
-        'Windows 11 Enterprise': 'src\Audit\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.xlsx',
-        'Windows Server 2016': 'src\Audit\CIS_Microsoft_Windows_Server_2016_Benchmark_v2.0.0_L1_MS.xlsx',
-        'Windows Server 2019': 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_MS.xlsx',
-        'Windows Server 2022': 'src\Audit\CIS_Microsoft_Windows_Server_2022_Benchmark_v2.0.0_L1_MS.xlsx',
-
-    }
-
-    # for ver in ip_list[3]:
-    #     fname = version_dict[ver]
-
-    if input_fname:
-        fname = input_fname
-    else:
-        fname = version_dict[win_version]
-
-    xl = pd.ExcelFile(fname)
-    # df = xl.parse(sheet_name=0)
-
-    for type in data_dict:
-        try:
-            data_dict[type] = xl.parse(sheet_name=type)
-        except ValueError as e:
-            logging.error(f"{type} not found")
-            logger.error('Value not found: %s', e)
-
-    return data_dict
-
-
 def read_file(fname):
     data_dict = {
         "PASSWORD_POLICY": [],
@@ -151,7 +106,7 @@ def read_file(fname):
     return data_dict
 
 
-def save_file(out_fname, data_dict_list):
+def save_file(out_fname, data_dict_list, ip_addr):
 
     if data_dict_list == []:
         return
@@ -173,16 +128,16 @@ def save_file(out_fname, data_dict_list):
     column_names = result.columns.tolist()
 
     value_n_result = column_names[10:]
-    ip_list = []
+    ip_list = [ip_addr, '']
     name_list = []
 
     for i in range(len(value_n_result)):
         if i % 2 == 0:
-            ip = value_n_result[i].split('|')[0].strip()
-            ip_list.append(ip)
+            # ip = value_n_result[i].split('|')[0].strip()
+            # ip_list.append(ip)
             name_list.append('Actual Value')
         else:
-            ip_list.append('')
+            # ip_list.append('')
             name_list.append('Result')
 
     new_data = ['Checklist', 'Type', 'Index', 'Description', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
@@ -249,48 +204,42 @@ def configurations(config_fname):
 
         ip_list.append(ip)
 
-        # verify os
-        # os = getOS(ip)
-        # if os == versions[idx]:
-        #     ip_list.append(ip)
-        # else:
-        #     print(
-        #         f"IP: {ip[0]} | Invalid version | Expected: {ip[3]} | Actual: {os}")
-
     # return ip_dict
     return ip_list
 
 
 if __name__ == '__main__':
 
-    # my_parser = argparse.ArgumentParser(
-    #     description='A Customizable Multiprocessing Remote Security Audit Program')
+    my_parser = argparse.ArgumentParser(
+        description='A Customizable Multiprocessing Remote Security Audit Program')
 
-    # # Add the arguments
-    # my_parser.add_argument('--config',
-    #                        type=str,
-    #                        required=True,
-    #                        help='The configuration file')
+    # Add the arguments
+    my_parser.add_argument('--result',
+                           type=str,
+                           required=True,
+                           help='The result file')
 
-    # my_parser.add_argument('--output',
-    #                        type=str,
-    #                        required=True,
-    #                        help='The output file')
+    my_parser.add_argument('--output',
+                           type=str,
+                           required=True,
+                           help='The output file')
 
-    # my_parser.add_argument('--input',
-    #                        type=str,
-    #                        help='The input file (optional)')
+    my_parser.add_argument('--audit',
+                           type=str,
+                           required=True,
+                           help='The audit file')
 
-    # # Execute parse_args()
-    # args = my_parser.parse_args()
+    # Execute parse_args()
+    args = my_parser.parse_args()
 
-    # print('Configuration file:', args.config)
-    # print('Output file:', args.output)
-    # print('Input file:', args.input)
+    print('Result file:', args.result)
+    print('Output file:', args.output)
+    print('Audit file:', args.audit)
 
     start_t0 = time.time()
 
-    result_fname = "output_win10.txt"
+    # result_fname = "output_win10.txt"
+    result_fname = args.result
 
     output_list = []
     with open(result_fname, 'r', encoding='utf-16') as file:
@@ -302,9 +251,10 @@ if __name__ == '__main__':
     output_list = single_line.strip().split("====")
     output_list.pop(0)
 
-    fname = "src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx"
+    # audit_fname = "src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx"
+    audit_fname = args.audit
 
-    data_dict = read_file(fname)
+    data_dict = read_file(audit_fname)
 
     # add actual value to the audit file
     head = 0
@@ -319,8 +269,9 @@ if __name__ == '__main__':
     results = []
     results.append(new_dict)
 
+    ip_addr = "666"
     # # write output file
-    save_file(r"out\remote_output_v16.xlsx", results)
+    save_file(args.output, results, ip_addr)
 
     # start_t = time.time()
 
