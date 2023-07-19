@@ -262,10 +262,6 @@ if __name__ == '__main__':
     head = 0
     for key in data_dict:
         length = len(data_dict[key])
-        # print(key, len(output_list[head: (head+length)]))
-        # print()
-        # print(output_list[head: (head+length)])
-        # print()
         data_dict[key]['Actual Value'] = output_list[head: (head+length)]
         head += length
 
@@ -278,11 +274,3 @@ if __name__ == '__main__':
     ip_addr = "IP"
     # # write output file
     save_file(args.output, results, ip_addr)
-
-    # start_t = time.time()
-
-    # end_t0 = time.time()
-
-    # running_t0 = end_t0 - start_t0
-    # logger.info(f"The script ran for {running_t0} seconds")
-    # logging.info(f"The script ran for {running_t0} seconds")

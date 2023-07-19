@@ -1,23 +1,8 @@
 import pandas as pd
-import time
 import logging
 import argparse
 
-
-from multiprocessing import Pool, Manager
 from openpyxl import load_workbook
-
-from getPwdPolicy import get_pwd_policy_actual_value, compare_pwd_policy
-from getRegValue import get_registry_actual_value, compare_reg_value, get_reg_value
-from getLockoutPolicy import get_lockout_policy_actual_value, compare_lockout_policy
-from getUserRights import get_user_rights_actual_value, compare_user_rights
-from getCheckAccount import get_check_account_actual_value, compare_check_account
-from getBannerCheck import get_banner_check_actual_value, compare_banner_check
-from getAnonySID import get_anonymous_sid_value, compare_anonymous_sid
-from getAuditPolicy import get_audit_policy_actual_value, compare_audit_policy
-from getRegCheck import get_reg_check_actual_value, compare_reg_check
-from getWMIPolicy import get_wmi_policy_actual_value, compare_wmi_policy
-
 
 # set up logger
 logger = logging.getLogger(__name__)
@@ -44,8 +29,6 @@ def gen_ps_args(data_dict):
         reg_item_values = df['Reg Item'].values
         subcategory_values = df['Audit Policy Subcategory'].values
         right_type_values = df['Right type'].values
-
-        actual_value_list = []
 
         if key == "REGISTRY_SETTING":
 
@@ -460,50 +443,38 @@ def configurations(config_fname):
 
 if __name__ == '__main__':
 
-    # my_parser = argparse.ArgumentParser(
-    #     description='A Customizable Multiprocessing Remote Security Audit Program')
+    my_parser = argparse.ArgumentParser(
+        description='A Customizable Multiprocessing Remote Security Audit Program')
 
-    # # Add the arguments
-    # my_parser.add_argument('--config',
-    #                        type=str,
-    #                        required=True,
-    #                        help='The configuration file')
+    # Add the arguments
+    my_parser.add_argument('--audit',
+                           type=str,
+                           required=True,
+                           help='The audit file')
 
-    # my_parser.add_argument('--output',
-    #                        type=str,
-    #                        required=True,
-    #                        help='The output file')
+    my_parser.add_argument('--output',
+                           type=str,
+                           required=False,
+                           help='The output powershell file')
 
-    # my_parser.add_argument('--input',
-    #                        type=str,
-    #                        help='The input file (optional)')
+    # Execute parse_args()
+    args = my_parser.parse_args()
 
-    # # Execute parse_args()
-    # args = my_parser.parse_args()
+    print('Aduit file:', args.audit)
+    print('Output file:', args.output)
 
-    # print('Configuration file:', args.config)
-    # print('Output file:', args.output)
-    # print('Input file:', args.input)
+    # fname = "src\Audit\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.xlsx"
 
-    # start_t0 = time.time()
-
-    # # read configurations
-    # ip_list = configurations(args.config)
-
-    # for i in ip_list:
-    #     print(f"IP: {i[0]} - {i[3]} loaded")
-
-    # win_version = ip_list[0][3]
-
-    fname = "src\Audit\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.xlsx"
-
+    fname = args.audit
     data_dict = read_file(fname)
-
     ps_args_dict = gen_ps_args(data_dict)
 
-    # print(ps_args_dict)
+    if args.output:
+        script_name = args.output
+    else:
 
-    script_name = 'out\script\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.ps1'
+        script_name = 'out\\script\\' + \
+            fname.split("\\")[-1].replace("xlsx", "ps1")
 
     with open(script_name, 'w') as f:
         for key in ps_args_dict:
@@ -512,15 +483,4 @@ if __name__ == '__main__':
             f.write(";")
             # print(cmd)
 
-    print("Done")
-
-    # # write output file
-    # save_file(args.output, results)
-
-    # start_t = time.time()
-
-    # end_t0 = time.time()
-
-    # running_t0 = end_t0 - start_t0
-    # logger.info(f"The script ran for {running_t0} seconds")
-    # logging.info(f"The script ran for {running_t0} seconds")
+    print("Done! File saved: %s", script_name)

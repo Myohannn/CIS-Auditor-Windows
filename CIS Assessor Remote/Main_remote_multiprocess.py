@@ -189,7 +189,7 @@ def gen_ps_args(data_dict):
                 if "Guest account status" in description:
                     check_account_args.append(
                         "net user guest | select-string -pattern 'Account active'")
-                
+
                 elif "Administrator account status" in description:
                     check_account_args.append(
                         "net user administrator | select-string -pattern 'Account active'")

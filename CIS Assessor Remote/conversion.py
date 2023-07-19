@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import argparse
 
 
 regexes = {
@@ -163,16 +164,32 @@ def output_file(data, writer):
 
 if __name__ == '__main__':
 
+    my_parser = argparse.ArgumentParser(
+        description='A Customizable Multiprocessing Remote Security Audit Program')
+
+    # Add the arguments
+    my_parser.add_argument('--audit',
+                           type=str,
+                           required=True,
+                           help='The audit file')
+
+    # Execute parse_args()
+    args = my_parser.parse_args()
+
+    print('Aduit file:', args.audit)
+
     # src_fname = 'src/CIS/CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.audit'
-    src_fname = 'src/CIS/CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.audit'
+    # src_fname = 'src/CIS/CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.audit'
+    src_fname = args.audit
     audit = read_file(src_fname)
 
     data = find_element(audit)
 
     # out_fname = 'src\win_server_2022_ms_v1.xlsx'
-    out_fname = 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.xlsx'
+    out_fname = 'src\\Audit\\' + \
+        src_fname.split("\\")[-1].replace("audit", "xlsx")
     writer = pd.ExcelWriter(out_fname, engine='openpyxl')
 
     output_file(data, writer)
-    writer.save()
+    writer.close()
     print(f"File export success --- {out_fname}")
