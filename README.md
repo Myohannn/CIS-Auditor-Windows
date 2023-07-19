@@ -152,5 +152,4 @@ Note: Windows 10 disables ADMIN$ by default. For all other operating systems, th
 ***
 
 ## Remarks
-1. Only suppots CIS Microsoft Windows 10 Enterprise Benchmark Level 1
-2. Index 18.9.19.5 is hardcoded
+1. 
