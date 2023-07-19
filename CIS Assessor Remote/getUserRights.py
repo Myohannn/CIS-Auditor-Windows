@@ -32,6 +32,9 @@ def get_sid(username):
     return result.stdout.decode().strip()
 
 
+print(get_sid("Window Manager"))
+
+
 def get_user_rights_remote():
     try:
 
@@ -114,47 +117,61 @@ def get_user_rights_actual_value(args_list, ip):
 
 def compare_user_right_result(right_type, expected_value, actual_value):
     user_right_dict = {"": "",
-                       "Administrators": "*S-1-5-32-544",
-                       "Users": "*S-1-5-32-545",
-                       "Guests": "*S-1-5-32-546",
-                       "Remote Desktop Users": "*S-1-5-32-555",
-                       "LOCAL SERVICE": "*S-1-5-19",
-                       "NETWORK SERVICE": "*S-1-5-20",
-                       "SERVICE": "*S-1-5-6",
-                       "Virtual Machines": "*S-1-5-83-0",
-                       "Local account": "*S-1-5-113",
-                       "Window Manager\Window Manager Group": "*S-1-5-90-0",
-                       "NT SERVICE\WdiServiceHost": "*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420"}
+                       "administrators": "*S-1-5-32-544",
+                       "users": "*S-1-5-32-545",
+                       "guests": "*S-1-5-32-546",
+                       "remote desktop users": "*S-1-5-32-555",
+                       "local service": "*S-1-5-19",
+                       "network service": "*S-1-5-20",
+                       "service": "*S-1-5-6",
+                       "virtual machines": "*S-1-5-83-0",
+                       "local account": "*S-1-5-113",
+                       "window manager": "*S-1-5-90-0",
+                       "window manager group": "*S-1-5-90-0",
+                       "window manager\window manager group": "*S-1-5-90-0",
+                       "nt service": "*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420",
+                       "wdiservicehost": "*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420",
+                       "nt service\wdiservicehost": "*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420"}
 
     actual_set = set(actual_value.split(','))
     sid_set = set()
     sid_set_list = []
 
+    if right_type == 'SeSyncAgentPrivilege':
+        if actual_value == '':
+            return True
+        else:
+            return False
+
     if '(' in expected_value or ')' in expected_value:
 
         if right_type == 'SeIncreaseBasePriorityPrivilege':
-            sid_set_list.append(set([user_right_dict['Administrators'],
-                                user_right_dict["Window Manager\Window Manager Group"]]))
+            sid_set_list.append(set([user_right_dict['administrators'],
+                                user_right_dict["window manager\window manager group"]]))
         elif right_type == 'SeCreateSymbolicLinkPrivilege':
-            sid_set_list.append(set([user_right_dict['Administrators']]))
+            sid_set_list.append(set([user_right_dict['administrators']]))
             sid_set_list.append(
-                set([user_right_dict['Administrators'], user_right_dict["Virtual Machines"]]))
+                set([user_right_dict['administrators'], user_right_dict["virtual machines"]]))
         elif right_type == 'SeSystemProfilePrivilege':
             sid_set_list.append(set(
-                [user_right_dict['Administrators'], user_right_dict["NT SERVICE\WdiServiceHost"]]))
+                [user_right_dict['administrators'], user_right_dict["nt service\wdiservicehost"]]))
+        elif right_type == 'SeSecurityPrivilege':
+            sid_set_list.append(set([user_right_dict['administrators']]))
 
     else:
         if '&' in expected_value:
             user_list = expected_value.split(" && ")
             for u in user_list:
+                u = u.lower()
                 sid_set.add(user_right_dict[u])
 
         elif '|' in expected_value:
             user_list = expected_value.split(" || ")
             for u in user_list:
+                u = u.lower()
                 sid_set.add(user_right_dict[u])
         else:
-            sid_set.add(user_right_dict[expected_value])
+            sid_set.add(user_right_dict[expected_value.lower()])
 
         sid_set_list.append(sid_set)
 
@@ -257,7 +274,6 @@ def compare_user_rights_local(data_dict):
         actual_value = actual_value.split("=")[-1].strip()
         actual_value_list[idx] = actual_value
 
-
         try:
             # print("Goodd")
             result = True
@@ -268,7 +284,6 @@ def compare_user_rights_local(data_dict):
                 pass_result = True
             else:
                 pass_result = False
-
 
         except (configparser.NoOptionError, KeyError):
             null_value_list = ['SeTrustedCredManAccessPrivilege',
@@ -284,7 +299,6 @@ def compare_user_rights_local(data_dict):
             else:
                 actual_value = "Invalid key"
                 pass_result = False
-
 
         if pass_result:
             print(

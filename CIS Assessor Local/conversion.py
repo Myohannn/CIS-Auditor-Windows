@@ -1,6 +1,3 @@
-# input .audit file
-# output version source file
-
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
@@ -12,9 +9,26 @@ regexes = {
     'value_data': re.compile(r'value_data\s+:\s+(.*?)\n'),
     'reg_key': re.compile(r'reg_key\s+:\s+(.*?)\n'),
     'reg_item': re.compile(r'reg_item\s+:\s+(.*?)\n'),
+    'reg_option': re.compile(r'reg_option\s+:\s+(.*?)\n'),
     'audit_policy_subcategory': re.compile(r'audit_policy_subcategory\s+:\s+(.*?)\n'),
     'key_item': re.compile(r'key_item\s+:\s+(.*?)\n'),
     'right_type': re.compile(r'right_type\s+:\s+(.*?)\n')
+}
+
+
+data_dict = {
+
+    "PASSWORD_POLICY": [],
+    "REGISTRY_SETTING": [],
+    "LOCKOUT_POLICY": [],
+    "USER_RIGHTS_POLICY": [],
+    "CHECK_ACCOUNT": [],
+    "BANNER_CHECK": [],
+    "ANONYMOUS_SID_SETTING": [],
+    "AUDIT_POLICY_SUBCATEGORY": [],
+    "REG_CHECK": [],
+    "WMI_POLICY": []
+
 }
 
 
@@ -31,7 +45,6 @@ def read_file(filename):
 
 
 def find_element(audit):
-    data = []
 
     soup = BeautifulSoup(audit, 'lxml')
 
@@ -48,6 +61,8 @@ def find_element(audit):
 
         if type == "AUDIT_POWERSHELL":
             continue
+        else:
+            type = type.strip()
 
         description = regexes['description'].search(item_str)
         description = description.group(1) if description else None
@@ -60,17 +75,22 @@ def find_element(audit):
         else:
             index = 0
 
+        index = str(index).strip()
+
         value_data = regexes['value_data'].search(item_str)
         value_data = value_data.group(1) if value_data else None
         value_data = str(value_data).replace('"', '')
         value_data = str(value_data).replace('&amp;&amp;', '&&')
-
 
         reg_key = regexes['reg_key'].search(item_str)
         reg_key = (reg_key.group(1)).replace('"', '') if reg_key else None
 
         reg_item = regexes['reg_item'].search(item_str)
         reg_item = (reg_item.group(1)).replace('"', '') if reg_item else None
+
+        reg_option = regexes['reg_option'].search(item_str)
+        reg_option = (reg_option.group(1)).replace(
+            '"', '') if reg_option else None
 
         key_item = regexes['key_item'].search(item_str)
         key_item = key_item.group(1) if key_item else None
@@ -84,32 +104,75 @@ def find_element(audit):
             1)).replace('"', '') if audit_policy_subcategory else None
 
         right_type = regexes['right_type'].search(item_str)
-        right_type = (right_type.group(1)).replace('"', '') if right_type else None
+        right_type = (right_type.group(1)).replace(
+            '"', '') if right_type else None
+
+        if type == 'BANNER_CHECK':
+            value_data = ''
+        elif type == 'ANONYMOUS_SID_SETTING':
+            value_data = '0'
+        elif type == 'REG_CHECK':
+            reg_key = value_data
+            value_data = ''
+        elif type == 'CHECK_ACCOUNT':
+            if 'Rename administrator account' in description:
+                value_data = 'Administrator'
+            elif 'Disabled' in description:
+                value_data = 'No'
+        elif type == 'PASSWORD_POLICY':
+            if value_data == 'Enabled':
+                value_data = 1
+            elif value_data == 'Disabled':
+                value_data = 0
+            elif value_data == '@PASSWORD_HISTORY@':
+                value_data = 24
+            elif value_data == '@MAXIMUM_PASSWORD_AGE@':
+                value_data = 365
+            elif value_data == '@MINIMUM_PASSWORD_AGE@':
+                value_data = 1
+            elif value_data == '@MINIMUM_PASSWORD_LENGTH@':
+                value_data = 14
+        elif type == 'REGISTRY_SETTING':
+            if index == '0':
+                value_data = 'Windows'
+            elif 'Lock Workstation' in description:
+                value_data = '1 || 2 || 3'
+            elif 'None' in description:
+                value_data = 'Null'
+            elif ' Remotely accessible registry paths' in description:
+                value_data = value_data.replace(' && ', '')
+            elif 'Screen saver timeout' in description:
+                value_data = '[0..900]'
+        # elif type == 'WMI_POLICY':
+        #     print(type)
+        #     continue
+
+        data_dict[type].append([1, type, index, description,
+                                reg_key, reg_item, reg_option, audit_policy_subcategory, right_type, value_data])
+
+    # return data
 
 
-        # Append the data to the list
-        data.append([1, type, index, description,
-                    reg_key, reg_item, audit_policy_subcategory, right_type, value_data])
+def output_file(data, writer):
 
-    return data
-
-
-def output_file(data, out_fname):
-    # Create a DataFrame from the data
-    df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
-                                     'Reg Key',  'Reg Item', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
-
-    # Write the DataFrame to an Excel file
-    df.to_excel(out_fname, index=False)
-    print(f"File export success --- {out_fname}")
+    for type, data in data_dict.items():
+        df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
+                                         'Reg Key',  'Reg Item', 'Reg Option', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
+        df.to_excel(writer, sheet_name=type, index=False)
 
 
 if __name__ == '__main__':
 
-    src_fname = 'src/test.audit'
+    # src_fname = 'src/CIS/CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.audit'
+    src_fname = 'src/CIS/CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.audit'
     audit = read_file(src_fname)
 
     data = find_element(audit)
 
-    out_fname = 'out\source_v1.xlsx'
-    output_file(data, out_fname)
+    # out_fname = 'src\win_server_2022_ms_v1.xlsx'
+    out_fname = 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.xlsx'
+    writer = pd.ExcelWriter(out_fname, engine='openpyxl')
+
+    output_file(data, writer)
+    writer.save()
+    print(f"File export success --- {out_fname}")
