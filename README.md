@@ -5,9 +5,9 @@ This project provides a customizable, multiprocessing, remote security auditing 
 Supports Windows versions:
 - [x] Windows 10 Enterprise
 - [x] Windows 11 Enterprise
-- [x] Windows Server 2016
-- [x] Windows Server 2019
-- [x] Windows Server 2022
+- [x] Windows Server 2016 MS/DC
+- [x] Windows Server 2019 MS
+- [x] Windows Server 2022 MS
 
 ## Addressing the Challenges
 
@@ -152,5 +152,4 @@ Note: Windows 10 disables ADMIN$ by default. For all other operating systems, th
 ***
 
 ## Remarks
-1. Only suppots CIS Microsoft Windows 10 Enterprise Benchmark Level 1
-2. Index 18.9.19.5 is hardcoded
+1. 
