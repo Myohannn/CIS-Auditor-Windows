@@ -5,9 +5,9 @@ This project provides a customizable, multiprocessing, remote security auditing 
 Supports Windows versions:
 - [x] Windows 10 Enterprise
 - [x] Windows 11 Enterprise
-- [x] Windows Server 2016
-- [x] Windows Server 2019
-- [x] Windows Server 2022
+- [x] Windows Server 2016 MS/DC
+- [x] Windows Server 2019 MS
+- [x] Windows Server 2022 MS
 
 ## Addressing the Challenges
 
