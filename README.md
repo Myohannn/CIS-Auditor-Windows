@@ -53,56 +53,52 @@ This section describes the high-level workflow of the security audit program.
 
 REGISTRY_SETTING / BANNER_CHECK / REG_CHECK
 
-    ``` powershell
+    
     Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'
     
     e.g., Get-ItemPropertyValue -Path 'HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion' -Name 'ProductName'
-    ```
+    
     
 PASSWORD_POLICY / ANONYMOUS_SID_SETTING
       
-    ``` powershell
     if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp }
     secedit /export /cfg C:\temp\secpol.cfg /areas SECURITYPOLICY
     $secpol = Get-Content -Path C:\temp\secpol.cfg
     $secpol | Select-String -Pattern '{subcategory}'
     
     e.g., $secpol | Select-String -Pattern "PasswordHistory"
-    ```
     
 USER_RIGHTS_POLICY
 
-    ``` powershell
     if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp }
     secedit /export /cfg C:\temp\secpol.cfg /areas user_rights
     $secpol = Get-Content -Path C:\temp\secpol.cfg
-    $secpol | Select-String -Pattern "SeCreateSymbolicLinkPrivilege"
+    $secpol | Select-String -Pattern "right_type"
     
     e.g., $secpol | Select-String -Pattern "SeNetworkLogonRight"
-    ```
     
 LOCKOUT_POLICY
 
-    ```powershell
     net accounts
     net accounts | Select-String -Pattern "{subcategory}"
-    ```
     
 CHECK_ACCOUNT
 
-    ```powershell
     net user guest
     net user administrator
     net user administrator | select-string -pattern "{subcategory}"
-    ```
     
 AUDIT_POLICY_SUBCATEGORY
       
-    ```powershell
     auditpol /get /subcategory:'{subcategory}'
 
     e.g., auditpol /get /subcategory:"Special Logon"
-    ```
+
+WMI_POLICY
+    
+    (Get-WmiObject -Class Win32_ComputerSystem).DomainRole
+    
+
 
 ***
 ## SETUP -- Windows configuration
