@@ -31,7 +31,11 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def get_actual_values(data_dict):
+def get_actual_values(data_dict: dict) -> dict:
+    '''
+    Compares the actual value and expected value by calling 
+    the appropriate comparison function for each audit type.
+    '''
 
     new_dict = {}
 
@@ -70,7 +74,11 @@ def get_actual_values(data_dict):
     return new_dict
 
 
-def read_file(fname):
+def read_file(fname: str) -> dict:
+    '''
+    Reads the audit file and returns a dictionary 
+    that is organized according to the audit type.
+    '''
     data_dict = {
         "PASSWORD_POLICY": [],
         "REGISTRY_SETTING": [],
@@ -87,12 +95,6 @@ def read_file(fname):
     xl = pd.ExcelFile(fname)
     # df = xl.parse(sheet_name=0)
 
-    def remove_illegal_chars(val):
-        if isinstance(val, str):
-            # Remove control characters
-            val = ''.join(ch for ch in val if ch.isprintable())
-        return val
-
     for ptype in data_dict:
         try:
             df0 = xl.parse(sheet_name=ptype)
@@ -104,7 +106,21 @@ def read_file(fname):
     return data_dict
 
 
-def save_file(out_fname, data_dict_list, ip_addr):
+def remove_illegal_chars(val: str) -> str:
+    '''
+    Presumably removes illegal characters from a given input, 
+    but lacks a docstring to confirm its exact functionality.
+    '''
+    if isinstance(val, str):
+        # Remove control characters
+        val = ''.join(ch for ch in val if ch.isprintable())
+    return val
+
+
+def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
+    ''' 
+    Processes the comparison results and saves them into an Excel file.
+    '''
 
     if data_dict_list == []:
         return
@@ -147,12 +163,6 @@ def save_file(out_fname, data_dict_list, ip_addr):
         [new_data + [''] * (result.shape[1] - len(new_data))], columns=result.columns)
     result = pd.concat([new_df, result]).reset_index(drop=True)
 
-    def remove_illegal_chars(val):
-        if isinstance(val, str):
-            # Remove control characters
-            val = ''.join(ch for ch in val if ch.isprintable())
-        return val
-
     # Apply the function to each string column in the DataFrame
     result = result.applymap(remove_illegal_chars)
 
@@ -183,33 +193,10 @@ def save_file(out_fname, data_dict_list, ip_addr):
     logging.info(f"Result saved into {out_fname}")
 
 
-def configurations(config_fname):
-
-    config_file = pd.ExcelFile(config_fname)
-
-    configs = config_file.parse(sheet_name=0)
-
-    ip_list = []
-
-    ips = configs['IP Address'].values
-    usernames = configs['Username'].values
-    passwords = configs['Password'].values
-    versions = configs['Windows Version'].values
-
-    for idx, val in enumerate(ips):
-        ip = [ips[idx], usernames[idx],
-              passwords[idx], versions[idx]]
-
-        ip_list.append(ip)
-
-    # return ip_dict
-    return ip_list
-
-
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(
-        description='A Customizable Multiprocessing Remote Security Audit Program')
+        description='A Security Audit Program')
 
     # Add the arguments
     my_parser.add_argument('--ps_result',

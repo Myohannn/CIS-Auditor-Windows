@@ -33,7 +33,11 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def gen_ps_args(data_dict):
+def gen_ps_args(data_dict: dict) -> dict:
+    '''
+    This function will generate a dictionary of PowerShell commands
+    that will be run on the remote system.
+    '''
     ps_args_dict = {}
 
     for key, df in data_dict.items():
@@ -221,7 +225,7 @@ def gen_ps_args(data_dict):
                 elif reg_key.startswith("HKU"):
                     reg_key = reg_key.replace("HKU", "HKU:")
 
-                arg = f"Write-Output '====';Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
+                arg = f"Write-Output '===='; Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
                 banner_check_args.append(arg)
 
                 if len(banner_check_args) == 50:
@@ -332,7 +336,11 @@ def gen_ps_args(data_dict):
     return ps_args_dict
 
 
-def get_actual_values(ip, ps_args_dict, data_dict):
+def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
+    '''
+    This function will execute the PowerShell commands generated 
+    by `gen_ps_args()` on the target system and retrieve their outputs.
+    '''
 
     new_dict = {}
 
@@ -475,7 +483,11 @@ def get_actual_values(ip, ps_args_dict, data_dict):
     return new_dict
 
 
-def read_file(win_version):
+def read_file(win_version: str) -> dict:
+    '''
+    This function reads in an Excel file that contains information 
+    about various Windows security settings and checks to be performed.
+    '''
 
     data_dict = {
         "PASSWORD_POLICY": [],
@@ -515,7 +527,10 @@ def read_file(win_version):
     return data_dict
 
 
-def save_file(out_fname, data_dict_list):
+def save_file(out_fname: str, data_dict_list: list) -> None:
+    '''
+    This function will save the results of the audit into an Excel file.
+    '''
 
     if data_dict_list == []:
         return
@@ -585,7 +600,11 @@ def save_file(out_fname, data_dict_list):
     logging.info(f"Result saved into {out_fname}")
 
 
-def configurations(config_fname):
+def configurations(config_fname: str) -> list:
+    '''
+    Reads the configuration settings from the 'config.xlsx' file,
+    including IP address, user account, and Windows version
+    '''
 
     config_file = pd.ExcelFile(config_fname)
 
@@ -607,13 +626,10 @@ def configurations(config_fname):
     return ip_list
 
 
-def getOS(ip):
-    reg_key = 'HKLM:\Software\Microsoft\Windows Nt\Currentversion'
-    reg_item = 'ProductName'
-    return str(get_reg_value(ip, reg_key, reg_item)).strip()
-
-
-def run(ip, data_dict):
+def run(ip: str, data_dict: dict) -> dict:
+    '''
+    This function will run the audit process for a single IP address.
+    '''
     logger.info(f'IP: {ip[0]} scanning start....')
     logging.info(f'IP: {ip[0]} scanning start....')
     start_t = time.time()
@@ -638,6 +654,11 @@ def run(ip, data_dict):
 
 
 if __name__ == '__main__':
+    '''
+    This is the main function of the script that coordinates the overall process. 
+    It reads the configuration file, reads the audit file, initiates parallel 
+    processing for multiple IP addresses, and finally saves the audit results.
+    '''
 
     my_parser = argparse.ArgumentParser(
         description='A Customizable Multiprocessing Remote Security Audit Program')
@@ -671,6 +692,7 @@ if __name__ == '__main__':
 
     data_dict = read_file(win_version)
 
+    # Initiate multiprocess
     with Manager() as manager:
         # initialize shared dictionary with data_dict
         shared_data_dict = manager.dict(data_dict)
