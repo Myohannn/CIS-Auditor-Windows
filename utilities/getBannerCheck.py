@@ -107,7 +107,6 @@ def compare_banner_check_local(data_dict):
         actual_value = actual_value_list[idx].strip()
         actual_value_list[idx] = actual_value
 
-
         if actual_value == "" or actual_value.isprintable() == False:
             pass_result = False
         else:

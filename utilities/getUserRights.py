@@ -32,39 +32,6 @@ def get_sid(username):
     return result.stdout.decode().strip()
 
 
-print(get_sid("Window Manager"))
-
-
-def get_user_rights_remote():
-    try:
-
-        win_client = Client("", username="", password="")
-        win_client.connect()
-        win_client.create_service()
-
-        # dump all user rights
-        arg = r"if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp };secedit /export /cfg C:\temp\secpol.cfg /areas user_rights"
-        win_client.run_executable(
-            "powershell.exe", arguments=arg)
-
-        # get user rights value
-        args_list = ["Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTrustedCredManAccessPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeNetworkLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTcbPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeIncreaseQuotaPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeRemoteInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeBackupPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSystemTimePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTimeZonePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreatePagefilePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreateTokenPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreateGlobalPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreatePermanentPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeCreateSymbolicLinkPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDebugPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyNetworkLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyBatchLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyServiceLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeDenyRemoteInteractiveLogonRight';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeEnableDelegationPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeRemoteShutdownPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeAuditPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeImpersonatePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeIncreaseBasePriorityPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeLoadDriverPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeLockMemoryPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSecurityPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeReLabelPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSystemEnvironmentPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeManageVolumePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeProfileSingleProcessPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeSystemProfilePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeAssignPrimaryTokenPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeRestorePrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeShutdownPrivilege';Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern 'SeTakeOwnershipPrivilege'"]
-        result = ''
-        # print(len(args_list))
-        for arg in args_list:
-
-            stdout, stderr, rc = win_client.run_executable(
-                "powershell.exe", arguments=arg)
-
-            output = stdout.decode("utf-8").replace('\r\n', '')
-            result = result + output
-
-    finally:
-        win_client.remove_service()
-        win_client.disconnect()
-        return result
-
-
 def get_user_rights_actual_value(args_list, ip):
 
     max_attempts = 5
