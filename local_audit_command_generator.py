@@ -3,7 +3,7 @@ import logging
 import argparse
 
 
-# set up logger
+# Setting up logging for the script. This will log debug messages to a file called 'mylog.log'.
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -18,10 +18,23 @@ logger.addHandler(handler)
 
 
 def gen_ps_args(data_dict: dict) -> dict:
-    ''' This function will generate PowerShell commands based on its audit type.
-    For some audit types, the judgements are hardcoded which may require updates in future.
-    It will return a dictionary (ps_args_dict).
     '''
+    This function generates PowerShell commands based on the provided audit type.
+
+    The function takes a dictionary where each key is an audit type and each value is a DataFrame 
+    containing the audit data for that type. The function iterates over each audit type and generates 
+    the appropriate PowerShell commands to audit that type. The commands are saved in a new dictionary 
+    where each key is an audit type and each value is a string of PowerShell commands.
+
+    Note: For some audit types, the conditions for generating commands are hardcoded. This may need 
+    to be updated in the future if the audit requirements change.
+
+    :param data_dict: A dictionary where each key is an audit type and each value is a DataFrame 
+                      containing the audit data for that type.
+    :return: A dictionary where each key is an audit type and each value is a string of PowerShell 
+             commands to audit that type.
+    '''
+
     ps_args_dict = {}
 
     for key, df in data_dict.items():
@@ -280,8 +293,19 @@ def gen_ps_args(data_dict: dict) -> dict:
 
 
 def read_file(fname: str) -> dict:
-    '''The function will read the audit file and return a dictionary based on the audit type
     '''
+    This function reads an Excel file containing audit data and returns a dictionary based on the audit type.
+
+    The function takes a filename as an argument. The file should be an Excel file with each sheet containing 
+    audit data for a different audit type. The function reads the data from each sheet and saves it in a 
+    DataFrame. The DataFrames are stored in a dictionary where each key is the audit type and each value is 
+    the corresponding DataFrame.
+
+    :param fname: A string containing the filename of an Excel file.
+    :return: A dictionary where each key is an audit type and each value is a DataFrame containing the 
+             audit data for that type.
+    '''
+
     data_dict = {
         "PASSWORD_POLICY": [],
         "REGISTRY_SETTING": [],
@@ -308,6 +332,20 @@ def read_file(fname: str) -> dict:
     return data_dict
 
 
+'''
+This is the entry point of the script. It parses the command-line arguments for the path to the audit file, 
+reads the audit file into a dictionary of DataFrames (one for each audit type), and generates the 
+corresponding PowerShell commands for each audit type. 
+
+The resulting PowerShell commands are then written to a .ps1 file for later execution. The name and location 
+of the .ps1 file is determined by the name of the input audit file.
+
+Usage: 
+    python local_audit_command_generator.py --audit /path/to/audit/file
+
+:param --audit: A string containing the path to the audit file.
+:return: None
+'''
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(

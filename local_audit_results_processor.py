@@ -17,7 +17,7 @@ from utilities.getRegCheck import compare_reg_check_local
 from utilities.getWMIPolicy import compare_wmi_policy_local
 
 
-# set up logger
+# Setting up logging for the script. This will log debug messages to a file called 'mylog.log'.
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -33,13 +33,22 @@ logger.addHandler(handler)
 
 def get_actual_values(data_dict: dict) -> dict:
     '''
-    Compares the actual value and expected value by calling 
-    the appropriate comparison function for each audit type.
+    This function takes a dictionary of data as input. For each type of audit, 
+    it calls the appropriate function to compare the actual and expected values. 
+    The function then returns a new dictionary with the comparison results.
+
+    :param data_dict: 
+        A dictionary with keys representing different audit types and values as 
+        DataFrames containing the audit data.
+    :return: 
+        A new dictionary with the same keys as data_dict but the values replaced 
+        with DataFrames that include the results of the comparison between the 
+        actual and expected values.
     '''
 
     new_dict = {}
 
-    for key, args_list in data_dict.items():
+    for key in data_dict.keys():
 
         try:
 
@@ -76,9 +85,17 @@ def get_actual_values(data_dict: dict) -> dict:
 
 def read_file(fname: str) -> dict:
     '''
-    Reads the audit file and returns a dictionary 
-    that is organized according to the audit type.
+    This function reads the provided audit file and returns a dictionary where 
+    the keys are different audit types and the values are corresponding audit 
+    data in DataFrame format.
+
+    :param fname: 
+        A string representing the filename of the audit file.
+    :return: 
+        A dictionary with keys representing different audit types and values as 
+        DataFrames containing the audit data.
     '''
+
     data_dict = {
         "PASSWORD_POLICY": [],
         "REGISTRY_SETTING": [],
@@ -108,9 +125,15 @@ def read_file(fname: str) -> dict:
 
 def remove_illegal_chars(val: str) -> str:
     '''
-    Presumably removes illegal characters from a given input, 
-    but lacks a docstring to confirm its exact functionality.
+    This function checks if the given value is a string, and if so, removes any 
+    non-printable characters.
+
+    :param val: 
+        A string potentially containing non-printable characters.
+    :return: 
+        The same string but with any non-printable characters removed.
     '''
+
     if isinstance(val, str):
         # Remove control characters
         val = ''.join(ch for ch in val if ch.isprintable())
@@ -119,7 +142,16 @@ def remove_illegal_chars(val: str) -> str:
 
 def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
     ''' 
-    Processes the comparison results and saves them into an Excel file.
+    This function processes the comparison results and saves them into an Excel file.
+
+    :param out_fname: 
+        A string representing the filename of the output file.
+    :param data_dict_list: 
+        A list of dictionaries containing comparison results.
+    :param ip_addr: 
+        A string representing an IP address.
+    :return: 
+        None
     '''
 
     if data_dict_list == []:
@@ -193,6 +225,12 @@ def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
     logging.info(f"Result saved into {out_fname}")
 
 
+'''
+This is the main function that gets executed when the script runs. It parses 
+command-line arguments, reads the audit file, compares actual and expected 
+values for each audit type, and finally saves the comparison results into an 
+output file.
+'''
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(

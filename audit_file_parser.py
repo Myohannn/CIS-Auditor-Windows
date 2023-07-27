@@ -34,7 +34,11 @@ data_dict = {
 
 
 def read_file(filename: str) -> str:
-    '''This function will read the content of the provided file
+    '''
+    Reads the contents of a file and returns it as a string.
+
+    :param filename: The path to the file to read.
+    :return: A string containing the contents of the file.
     '''
 
     contents = ''
@@ -48,8 +52,12 @@ def read_file(filename: str) -> str:
 
 
 def find_element(audit: str) -> None:
-    '''This function will find the required elements based on the regular expression (regexes),
-    and the content (audit). Finally, it will save the results into a dictionary (data_dict)
+    '''
+    Processes an audit string, extracts relevant information according to predefined regular expressions, 
+    and stores the results in a global dictionary.
+
+    :param audit: The audit string to process.
+    :return: None
     '''
 
     soup = BeautifulSoup(audit, 'lxml')
@@ -160,7 +168,11 @@ def find_element(audit: str) -> None:
 
 
 def output_file(out_fname):
-    '''This function will save the result into the given path (out_fname)
+    '''
+    Saves the global data dictionary to an Excel file.
+
+    :param out_fname: The path where the output Excel file will be saved.
+    :return: None
     '''
 
     writer = pd.ExcelWriter(out_fname, engine='openpyxl')
@@ -173,6 +185,11 @@ def output_file(out_fname):
     writer.close()
 
 
+'''
+Parses command-line arguments for an audit file, processes the audit file, and saves the results to an Excel file.
+
+:return: None
+'''
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(
