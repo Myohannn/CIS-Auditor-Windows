@@ -551,7 +551,7 @@ def save_file(out_fname: str, data_dict_list: list) -> None:
 
     column_names = result.columns.tolist()
 
-    value_n_result = column_names[10:]
+    value_n_result = column_names[11:]
     ip_list = []
     name_list = []
 
@@ -564,9 +564,9 @@ def save_file(out_fname: str, data_dict_list: list) -> None:
             ip_list.append('')
             name_list.append('Result')
 
-    new_data = ['Checklist', 'Type', 'Index', 'Description', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
+    new_data = ['Checklist', 'Type', 'Index', 'Description', 'Solution', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
                 'Right type', 'Value Data'] + name_list
-    result.columns = ['Checklist', 'Type', 'Index', 'Description', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
+    result.columns = ['Checklist', 'Type', 'Index', 'Description', 'Solution', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
                       'Right type', 'Value Data'] + ip_list
 
     new_df = pd.DataFrame(
@@ -581,12 +581,12 @@ def save_file(out_fname: str, data_dict_list: list) -> None:
     ws = wb.active
 
     # Merge the appropriate cells in the new first row
-    for col in range(1, 11):  # adjust these values as needed
+    for col in range(1, 12):  # adjust these values as needed
         ws.merge_cells(start_row=1, start_column=col,
                        end_row=2, end_column=col)
 
-    for ip_col in range(11, len(result.columns)):  # adjust these values as needed
-        if ip_col % 2 != 0:
+    for ip_col in range(12, len(result.columns)):  # adjust these values as needed
+        if ip_col % 2 == 0:
             ws.merge_cells(start_row=1, start_column=ip_col,
                            end_row=1, end_column=ip_col+1)
         else:
@@ -623,6 +623,8 @@ def configurations(config_fname: str) -> list:
 
         ip_list.append(ip)
 
+    print(ip_list)
+    exit()
     return ip_list
 
 

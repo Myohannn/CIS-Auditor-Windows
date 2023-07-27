@@ -141,7 +141,7 @@ def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
 
     column_names = result.columns.tolist()
 
-    value_n_result = column_names[10:]
+    value_n_result = column_names[11:]
     ip_list = [ip_addr, '']
     name_list = []
 
@@ -154,9 +154,9 @@ def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
             # ip_list.append('')
             name_list.append('Result')
 
-    new_data = ['Checklist', 'Type', 'Index', 'Description', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
+    new_data = ['Checklist', 'Type', 'Index', 'Description', 'Solution', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
                 'Right type', 'Value Data'] + name_list
-    result.columns = ['Checklist', 'Type', 'Index', 'Description', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
+    result.columns = ['Checklist', 'Type', 'Index', 'Description', 'Solution', 'Reg Key', 'Reg Item', 'Reg Option', 'Audit Policy Subcategory',
                       'Right type', 'Value Data'] + ip_list
 
     new_df = pd.DataFrame(
@@ -174,12 +174,12 @@ def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
     ws = wb.active
 
     # Merge the appropriate cells in the new first row
-    for col in range(1, 11):  # adjust these values as needed
+    for col in range(1, 12):  # adjust these values as needed
         ws.merge_cells(start_row=1, start_column=col,
                        end_row=2, end_column=col)
 
-    for ip_col in range(11, len(result.columns)):  # adjust these values as needed
-        if ip_col % 2 != 0:
+    for ip_col in range(12, len(result.columns)):  # adjust these values as needed
+        if ip_col % 2 == 0:
             ws.merge_cells(start_row=1, start_column=ip_col,
                            end_row=1, end_column=ip_col+1)
         else:
@@ -217,14 +217,14 @@ if __name__ == '__main__':
     # Execute parse_args()
     args = my_parser.parse_args()
 
-    print('PowerShell result file:', args.result)
+    print('PowerShell result file:', args.ps_result)
     print('Output file:', args.output)
     print('Audit file:', args.audit)
 
     start_t0 = time.time()
 
     # result_fname = "output_win10.txt"
-    result_fname = args.result
+    result_fname = args.ps_result
 
     output_list = []
     with open(result_fname, 'r', encoding='utf-16') as file:
