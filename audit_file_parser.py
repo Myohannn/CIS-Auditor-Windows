@@ -13,7 +13,8 @@ regexes = {
     'reg_option': re.compile(r'reg_option\s+:\s+(.*?)\n'),
     'audit_policy_subcategory': re.compile(r'audit_policy_subcategory\s+:\s+(.*?)\n'),
     'key_item': re.compile(r'key_item\s+:\s+(.*?)\n'),
-    'right_type': re.compile(r'right_type\s+:\s+(.*?)\n')
+    'right_type': re.compile(r'right_type\s+:\s+(.*?)\n'),
+    'solution': re.compile(r'solution\s*:\s*(.+?)\n\s*Default Value:', re.DOTALL | re.IGNORECASE)
 }
 
 
@@ -81,6 +82,10 @@ def find_element(audit: str) -> None:
             index = 0
 
         index = str(index).strip()
+
+        solution = regexes['solution'].search(item_str)
+        solution = solution.group(1).strip('"').replace(
+            '\n', ' ') if solution else None
 
         value_data = regexes['value_data'].search(item_str)
         value_data = value_data.group(1) if value_data else None
@@ -150,7 +155,7 @@ def find_element(audit: str) -> None:
             elif 'Screen saver timeout' in description:
                 value_data = '[0..900]'
 
-        data_dict[type].append([1, type, index, description,
+        data_dict[type].append([1, type, index, description, solution,
                                 reg_key, reg_item, reg_option, audit_policy_subcategory, right_type, value_data])
 
 
@@ -161,7 +166,7 @@ def output_file(out_fname):
     writer = pd.ExcelWriter(out_fname, engine='openpyxl')
 
     for type, data in data_dict.items():
-        df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description',
+        df = pd.DataFrame(data, columns=['Checklist', 'Type', 'Index', 'Description', 'Solution',
                                          'Reg Key',  'Reg Item', 'Reg Option', 'Audit Policy Subcategory', 'Right type', 'Value Data'])
         df.to_excel(writer, sheet_name=type, index=False)
 
@@ -171,7 +176,7 @@ def output_file(out_fname):
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(
-        description='A Customizable Multiprocessing Remote Security Audit Program')
+        description='A audit file parser')
 
     # Add the arguments
     my_parser.add_argument('--audit',
