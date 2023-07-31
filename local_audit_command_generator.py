@@ -49,7 +49,6 @@ def gen_ps_args(data_dict: dict) -> dict:
         if key == "REGISTRY_SETTING":
 
             reg_value_args = []
-            reg_value_args_list = []
 
             for idx, val in enumerate(checklist_values):
                 # generate command list for getting regristry value
@@ -61,17 +60,14 @@ def gen_ps_args(data_dict: dict) -> dict:
                 elif reg_key.startswith("HKU"):
                     reg_key = reg_key.replace("HKU", "HKU:")
 
-                arg = f"Write-Output '====';Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
+                arg = f"Write-Output '====';\nGet-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
                 reg_value_args.append(arg)
 
-            reg_value_args_list.append(';'.join(reg_value_args))
-
-            ps_args_dict[key] = ';'.join(reg_value_args)
+            ps_args_dict[key] = ';\n'.join(reg_value_args)
 
         elif key == "PASSWORD_POLICY":
 
             pwd_policy_args = []
-            pwd_policy_args_list = []
 
             for idx, val in enumerate(checklist_values):
                 # if val == 1:
@@ -104,15 +100,13 @@ def gen_ps_args(data_dict: dict) -> dict:
                     subcategory = 'ForceLogoffWhenHourExpire ='
 
                 else:
-                    pwd_policy_args.append("")
+                    pwd_policy_args.append("\n")
 
-                arg = f"Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{subcategory}'"
+                arg = f"Write-Output '====';\nGet-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{subcategory}'"
 
                 pwd_policy_args.append(arg)
 
-            pwd_policy_args_list.append(';'.join(pwd_policy_args))
-
-            ps_args_dict[key] = ';'.join(pwd_policy_args)
+            ps_args_dict[key] = ';\n'.join(pwd_policy_args)
 
         elif key == "LOCKOUT_POLICY":
 
@@ -125,37 +119,34 @@ def gen_ps_args(data_dict: dict) -> dict:
 
                 if "Account lockout duration" in description:
                     lockout_policy_args.append(
-                        "Write-Output '====';net accounts | select-string -pattern 'Lockout duration'")
+                        "Write-Output '====';\nnet accounts | select-string -pattern 'Lockout duration'")
 
                 elif "Account lockout threshold" in description:
                     lockout_policy_args.append(
-                        "Write-Output '====';net accounts | select-string -pattern 'Lockout threshold'")
+                        "Write-Output '====';\nnet accounts | select-string -pattern 'Lockout threshold'")
 
                 elif "Reset account lockout counter" in description:
                     lockout_policy_args.append(
-                        "Write-Output '====';net accounts | select-string -pattern 'Lockout observation window'")
+                        "Write-Output '====';\nnet accounts | select-string -pattern 'Lockout observation window'")
                 else:
-                    lockout_policy_args.append("Write-Output '====';")
+                    lockout_policy_args.append("Write-Output '====';\n")
 
-            ps_args_dict[key] = ';'.join(lockout_policy_args)
+            ps_args_dict[key] = ';\n'.join(lockout_policy_args)
 
         elif key == "USER_RIGHTS_POLICY":
 
             user_rights_args = []
-            user_rights_args_list = []
 
             for idx, val in enumerate(checklist_values):
 
                 # if val == 1:
                 right_type = str(right_type_values[idx])
 
-                arg = f"Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{right_type}'"
+                arg = f"Write-Output '====';\nGet-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{right_type}'"
 
                 user_rights_args.append(arg)
 
-            user_rights_args_list.append(';'.join(user_rights_args))
-
-            ps_args_dict[key] = ';'.join(user_rights_args)
+            ps_args_dict[key] = ';\n'.join(user_rights_args)
 
         elif key == "CHECK_ACCOUNT":
             check_account_args = []
@@ -167,27 +158,26 @@ def gen_ps_args(data_dict: dict) -> dict:
 
                 if "Guest account status" in description:
                     check_account_args.append(
-                        "Write-Output '===='; net user guest | select-string -pattern 'Account active'")
+                        "Write-Output '====';\nnet user guest | select-string -pattern 'Account active'")
 
                 elif "Administrator account status" in description:
                     check_account_args.append(
-                        "Write-Output '===='; net user administrator | select-string -pattern 'Account active'")
+                        "Write-Output '====';\nnet user administrator | select-string -pattern 'Account active'")
 
                 elif "Rename administrator account" in description:
                     check_account_args.append(
-                        "Write-Output '===='; net user administrator | select-string -pattern 'User name'")
+                        "Write-Output '===='\nnet user administrator | select-string -pattern 'User name'")
 
                 elif "Rename guest account" in description:
                     check_account_args.append(
-                        "Write-Output '===='; net user guest | select-string -pattern 'User name'")
+                        "Write-Output '====';\nnet user guest | select-string -pattern 'User name'")
                 else:
-                    check_account_args.append("Write-Output '====';")
+                    check_account_args.append("Write-Output '====';\n")
 
-            ps_args_dict[key] = ';'.join(check_account_args)
+            ps_args_dict[key] = ';\n'.join(check_account_args)
 
         elif key == "BANNER_CHECK":
             banner_check_args = []
-            banner_check_args_list = []
 
             for idx, val in enumerate(checklist_values):
                 # if val == 1:
@@ -200,12 +190,10 @@ def gen_ps_args(data_dict: dict) -> dict:
                 elif reg_key.startswith("HKU"):
                     reg_key = reg_key.replace("HKU", "HKU:")
 
-                arg = f"Write-Output '====';Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
+                arg = f"Write-Output '====';\nGet-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
                 banner_check_args.append(arg)
 
-            banner_check_args_list.append(';'.join(banner_check_args))
-
-            ps_args_dict[key] = ';'.join(banner_check_args)
+            ps_args_dict[key] = ';\n'.join(banner_check_args)
 
         elif key == "ANONYMOUS_SID_SETTING":
 
@@ -221,34 +209,30 @@ def gen_ps_args(data_dict: dict) -> dict:
                 if "Allow anonymous SID/Name translation" in description:
                     subcategory = 'LSAAnonymousNameLookup ='
 
-                arg = f"Write-Output '===='; Get-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{subcategory}'"
+                arg = f"Write-Output '====';\nGet-Content -Path C:\\temp\\secpol.cfg | Select-String -Pattern '{subcategory}'"
 
                 anonymous_sid_args.append(arg)
 
             anonymous_sid_args_list.append(';'.join(anonymous_sid_args))
 
-            ps_args_dict[key] = ';'.join(anonymous_sid_args)
+            ps_args_dict[key] = ';\n'.join(anonymous_sid_args)
 
         elif key == "AUDIT_POLICY_SUBCATEGORY":
             audit_policy_args = []
-            audit_policy_args_list = []
 
             for idx, val in enumerate(checklist_values):
 
                 # if val == 1:
                 subcategory = str(subcategory_values[idx])
 
-                arg = f"Write-Output '===='; auditpol /get /subcategory:'{subcategory}' | select-string -pattern '{subcategory}'"
+                arg = f"Write-Output '====';\nauditpol /get /subcategory:'{subcategory}' | select-string -pattern '{subcategory}'"
 
                 audit_policy_args.append(arg)
 
-            audit_policy_args_list.append(';'.join(audit_policy_args))
-
-            ps_args_dict[key] = ';'.join(audit_policy_args)
+            ps_args_dict[key] = ';\n'.join(audit_policy_args)
 
         elif key == "REG_CHECK":
             reg_check_args = []
-            reg_check_args_list = []
 
             for idx, val in enumerate(checklist_values):
 
@@ -262,29 +246,24 @@ def gen_ps_args(data_dict: dict) -> dict:
                 elif reg_key.startswith("HKU"):
                     reg_key = reg_key.replace("HKU", "HKU:")
 
-                arg = f"Write-Output '====';Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
+                arg = f"Write-Output '====';\nGet-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
 
                 reg_check_args.append(arg)
 
-            reg_check_args_list.append(';'.join(reg_check_args))
-
-            ps_args_dict[key] = ';'.join(reg_check_args)
+            ps_args_dict[key] = ';\n'.join(reg_check_args)
 
         elif key == "WMI_POLICY":
             wmi_policy_args = []
-            wmi_policy_args_list = []
 
             for idx, val in enumerate(checklist_values):
 
                 # if val == 1:
 
-                arg = "Write-Output '====';(Get-WmiObject -Class Win32_ComputerSystem).DomainRole"
+                arg = "Write-Output '====';\n(Get-WmiObject -Class Win32_ComputerSystem).DomainRole"
 
                 wmi_policy_args.append(arg)
 
-            wmi_policy_args_list.append(';'.join(wmi_policy_args))
-
-            ps_args_dict[key] = ';'.join(wmi_policy_args)
+            ps_args_dict[key] = ';\n'.join(wmi_policy_args)
 
         else:
             continue
