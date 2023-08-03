@@ -2,6 +2,7 @@ import pandas as pd
 import time
 import logging
 import argparse
+import sys
 
 from openpyxl import load_workbook
 
@@ -15,20 +16,6 @@ from utilities.getAnonySID import compare_anonymous_sid_local
 from utilities.getAuditPolicy import compare_audit_policy_local
 from utilities.getRegCheck import compare_reg_check_local
 from utilities.getWMIPolicy import compare_wmi_policy_local
-
-
-# Setting up logging for the script. This will log debug messages to a file called 'mylog.log'.
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-handler = logging.FileHandler('mylog.log', mode='w')
-handler.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-
-logger.addHandler(handler)
 
 
 def get_actual_values(data_dict: dict) -> dict:
@@ -75,10 +62,7 @@ def get_actual_values(data_dict: dict) -> dict:
 
             new_dict[key] = new_df
         except Exception as e:
-            logger.error('Failed to get actual value: %s', e)
             logging.debug('Failed to get actual value: %s', e)
-
-        # new_dict[key] = new_df
 
     return new_dict
 
@@ -118,7 +102,6 @@ def read_file(fname: str) -> dict:
             data_dict[ptype] = df0.applymap(remove_illegal_chars)
         except ValueError as e:
             logging.error(f"{ptype} not found")
-            logger.error('Value not found: %s', e)
 
     return data_dict
 
@@ -221,7 +204,6 @@ def save_file(out_fname: str, data_dict_list: list, ip_addr: str) -> None:
     wb.save(out_fname)
     print((f"Result saved into {out_fname}"))
 
-    logger.info(f"Result saved into {out_fname}")
     logging.info(f"Result saved into {out_fname}")
 
 
@@ -234,26 +216,30 @@ output file.
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(
-        description='A Security Audit Program')
+        description="This is a script for processing audit results.")
 
     # Add the arguments
-    my_parser.add_argument('--ps_result',
+    my_parser.add_argument('-ps_result',
                            type=str,
                            required=True,
-                           help='The path of result file after running the PowerShell script')
+                           help='(REQUIRED) The path of the result file generated after running the PowerShell script. This should be a .txt file.')
 
-    my_parser.add_argument('--output',
+    my_parser.add_argument('-output',
                            type=str,
                            required=True,
-                           help='The path of output file')
+                           help='(REQUIRED) The path where the output result file should be saved. This should be a .txt file.')
 
-    my_parser.add_argument('--audit',
+    my_parser.add_argument('-audit',
                            type=str,
                            required=True,
-                           help='The path of audit file')
+                           help='(REQUIRED) The path of the parsed audit file that contains the audit results you want to process. This should be a .xlsx file')
 
     # Execute parse_args()
-    args = my_parser.parse_args()
+    try:
+        args = my_parser.parse_args()
+    except SystemExit:
+        my_parser.print_help()
+        sys.exit(1)
 
     print('PowerShell result file:', args.ps_result)
     print('Output file:', args.output)
@@ -272,9 +258,8 @@ if __name__ == '__main__':
 
     # actual value list
     output_list = single_line.strip().split("====")
+    ip_addr = output_list[0]
     output_list.pop(0)
-
-    print(len(output_list))
 
     # audit_fname = "src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx"
     audit_fname = args.audit
@@ -294,6 +279,5 @@ if __name__ == '__main__':
     results = []
     results.append(new_dict)
 
-    ip_addr = "IP"
     # # write output file
     save_file(args.output, results, ip_addr)

@@ -2,9 +2,10 @@ import pandas as pd
 import time
 import logging
 import argparse
+import sys
 
 
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool, Manager, freeze_support
 from openpyxl import load_workbook
 
 from utilities.getPwdPolicy import get_pwd_policy_actual_value, compare_pwd_policy
@@ -17,20 +18,6 @@ from utilities.getAnonySID import get_anonymous_sid_value, compare_anonymous_sid
 from utilities.getAuditPolicy import get_audit_policy_actual_value, compare_audit_policy
 from utilities.getRegCheck import get_reg_check_actual_value, compare_reg_check
 from utilities.getWMIPolicy import get_wmi_policy_actual_value, compare_wmi_policy
-
-
-# Setting up logging for the script. This will log debug messages to a file called 'mylog.log'.
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-handler = logging.FileHandler('mylog.log', mode='w')
-handler.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-
-logger.addHandler(handler)
 
 
 def gen_ps_args(data_dict: dict) -> dict:
@@ -373,7 +360,6 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
         try:
 
             if key == "PASSWORD_POLICY":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 if args_list == [''] or args_list == []:
                     actual_value_list = []
@@ -381,12 +367,10 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                     actual_value_list = get_pwd_policy_actual_value(
                         args_list, ip)
 
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_pwd_policy(
                     ip[0], actual_value_list, data_dict)
             elif key == "REGISTRY_SETTING":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -394,11 +378,9 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_registry_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_reg_value(ip[0], actual_value_list, data_dict)
             elif key == "LOCKOUT_POLICY":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -406,12 +388,10 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_lockout_policy_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_lockout_policy(
                     ip[0], actual_value_list, data_dict)
             elif key == "USER_RIGHTS_POLICY":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -419,12 +399,10 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_user_rights_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_user_rights(
                     ip[0], actual_value_list, data_dict)
             elif key == "CHECK_ACCOUNT":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -432,34 +410,28 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_check_account_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_check_account(
                     ip[0], actual_value_list, data_dict)
             elif key == "BANNER_CHECK":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 actual_value_list = get_banner_check_actual_value(
                     args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_banner_check(
                     ip[0], actual_value_list, data_dict)
             elif key == "ANONYMOUS_SID_SETTING":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
                     actual_value_list = []
                 else:
                     actual_value_list = get_anonymous_sid_value(args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_anonymous_sid(
                     ip[0], actual_value_list, data_dict)
             elif key == "AUDIT_POLICY_SUBCATEGORY":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -467,12 +439,10 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_audit_policy_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_audit_policy(
                     ip[0], actual_value_list, data_dict)
             elif key == "REG_CHECK":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -480,11 +450,9 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_reg_check_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_reg_check(ip[0], actual_value_list, data_dict)
             elif key == "WMI_POLICY":
-                logger.info(f"{ip[0]} | Getting {key} value......")
                 logging.info(f"{ip[0]} | Getting {key} value......")
                 # continue
                 if args_list == [''] or args_list == []:
@@ -492,14 +460,12 @@ def get_actual_values(ip: list, ps_args_dict: dict, data_dict: dict) -> dict:
                 else:
                     actual_value_list = get_wmi_policy_actual_value(
                         args_list, ip)
-                logger.info(f"{ip[0]} | Comparing {key} value......")
                 logging.info(f"{ip[0]} | Comparing {key} value......")
                 new_df = compare_wmi_policy(
                     ip[0], actual_value_list, data_dict)
 
             new_dict[key] = new_df
         except Exception as e:
-            logger.error('Failed to get actual value: %s', e)
             logging.debug('Failed to get actual value: %s', e)
 
         # new_dict[key] = new_df
@@ -553,7 +519,6 @@ def read_file(win_version: str) -> dict:
             data_dict[type] = xl.parse(sheet_name=type)
         except ValueError as e:
             logging.error(f"{type} not found")
-            logger.error('Value not found: %s', e)
 
     return data_dict
 
@@ -634,7 +599,6 @@ def save_file(out_fname: str, data_dict_list: list) -> None:
     wb.save(out_fname)
     print((f"Result saved into {out_fname}"))
 
-    logger.info(f"Result saved into {out_fname}")
     logging.info(f"Result saved into {out_fname}")
 
 
@@ -685,7 +649,6 @@ def run(ip: str, data_dict: dict) -> dict:
         actual and expected values.
     '''
 
-    logger.info(f'IP: {ip[0]} scanning start....')
     logging.info(f'IP: {ip[0]} scanning start....')
     start_t = time.time()
 
@@ -693,7 +656,6 @@ def run(ip: str, data_dict: dict) -> dict:
         ps_args_dict = gen_ps_args(data_dict)
 
     except Exception as e:
-        logger.error('Failed to generate powershell command: %s', e)
         logging.error('Failed to generate powershell command')
         exit()
 
@@ -703,7 +665,6 @@ def run(ip: str, data_dict: dict) -> dict:
     end_t = time.time()
 
     running_t = end_t - start_t
-    logger.info(f"IP: {ip[0]} | Running time: {running_t} seconds")
     logging.info(f"IP: {ip[0]} | Running time: {running_t} seconds")
     return new_dict
 
@@ -716,22 +677,32 @@ the audit results into an output file.
 '''
 if __name__ == '__main__':
 
+    freeze_support()
+
     my_parser = argparse.ArgumentParser(
-        description='A Customizable Multiprocessing Remote Security Audit Program')
+        description='This is a script for performing a customizable, multiprocessing security audit on multiple remote systems.')
 
     # Add the arguments
-    my_parser.add_argument('--config',
-                           type=str,
-                           required=True,
-                           help='The path of configuration file')
+    my_parser.add_argument(
+        '-config',
+        type=str,
+        required=True,
+        help='(REQUIRED) The path to the configuration file that contains the IP addresses, usernames, passwords, and Windows versions of the systems to be audited. This should be a .xlsx file'
+    )
 
-    my_parser.add_argument('--output',
-                           type=str,
-                           required=True,
-                           help='The path of output file')
+    my_parser.add_argument(
+        '-output',
+        type=str,
+        required=True,
+        help='(REQUIRED) The path to the output file where the results of the audit will be saved. This should be a .xlsx file.'
+    )
 
     # Execute parse_args()
-    args = my_parser.parse_args()
+    try:
+        args = my_parser.parse_args()
+    except SystemExit:
+        my_parser.print_help()
+        sys.exit(1)
 
     print('Configuration file:', args.config)
     print('Output file:', args.output)
@@ -765,5 +736,4 @@ if __name__ == '__main__':
     end_t0 = time.time()
 
     running_t0 = end_t0 - start_t0
-    logger.info(f"The script ran for {running_t0} seconds")
     logging.info(f"The script ran for {running_t0} seconds")

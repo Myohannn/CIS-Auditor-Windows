@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import argparse
+import sys
 
 # The regular expressions to extract required data
 regexes = {
@@ -193,16 +194,20 @@ Parses command-line arguments for an audit file, processes the audit file, and s
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(
-        description='A audit file parser')
+        description='This is a script for parsing audit files and generating an Excel file containing relevant data.')
 
     # Add the arguments
-    my_parser.add_argument('--audit',
+    my_parser.add_argument('-audit',
                            type=str,
                            required=True,
-                           help='The path of audit file')
+                           help='(REQUIRED) The path to the raw audit file. This should be a .audit file.')
 
     # Execute parse_args()
-    args = my_parser.parse_args()
+    try:
+        args = my_parser.parse_args()
+    except SystemExit:
+        my_parser.print_help()
+        sys.exit(1)
 
     print('Aduit file:', args.audit)
 

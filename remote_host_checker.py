@@ -1,6 +1,7 @@
 import subprocess
 import argparse
 import pandas as pd
+import sys
 
 from pypsexec.client import Client
 from smbprotocol.exceptions import BadNetworkName, CannotDelete
@@ -154,16 +155,22 @@ Usage:
 if __name__ == "__main__":
 
     my_parser = argparse.ArgumentParser(
-        description='Remote host requirement checker')
+        description='This is a script for checking the remote host requirements')
 
     # Add the arguments
-    my_parser.add_argument('--config',
-                           type=str,
-                           required=True,
-                           help='The path of configuration file')
+    my_parser.add_argument(
+        '-config',
+        type=str,
+        required=True,
+        help='(REQUIRED) The path to the configuration file that contains the IP addresses, usernames, passwords, and Windows versions of the systems to be audited. This should be a .xlsx file'
+    )
 
     # Execute parse_args()
-    args = my_parser.parse_args()
+    try:
+        args = my_parser.parse_args()
+    except SystemExit:
+        my_parser.print_help()
+        sys.exit(1)
 
     print('Configuration file:', args.config)
 

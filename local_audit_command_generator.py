@@ -1,20 +1,7 @@
 import pandas as pd
 import logging
 import argparse
-
-
-# Setting up logging for the script. This will log debug messages to a file called 'mylog.log'.
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-handler = logging.FileHandler('mylog.log', mode='w')
-handler.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-
-logger.addHandler(handler)
+import sys
 
 
 def gen_ps_args(data_dict: dict) -> dict:
@@ -306,7 +293,6 @@ def read_file(fname: str) -> dict:
             data_dict[type] = xl.parse(sheet_name=type)
         except ValueError as e:
             logging.error(f"{type} not found")
-            logger.error('Value not found: %s', e)
 
     return data_dict
 
@@ -328,16 +314,20 @@ Usage:
 if __name__ == '__main__':
 
     my_parser = argparse.ArgumentParser(
-        description='A Customizable Multiprocessing Remote Security Audit Program')
+        description="This is a script for generating PowerShell commands based on audit data.")
 
     # Add the arguments
-    my_parser.add_argument('--audit',
+    my_parser.add_argument('-audit',
                            type=str,
                            required=True,
-                           help='The path of audit file')
+                           help='(REQUIRED) The path to the parsed audit file. This should be a .xlsx file.')
 
     # Execute parse_args()
-    args = my_parser.parse_args()
+    try:
+        args = my_parser.parse_args()
+    except SystemExit:
+        my_parser.print_help()
+        sys.exit(1)
 
     print('Aduit file:', args.audit)
 
@@ -347,10 +337,12 @@ if __name__ == '__main__':
     ps_args_dict = gen_ps_args(data_dict)
 
     # save file
-    script_name = 'out\\script\\' + \
+    script_name = 'script\\' + \
         fname.split("\\")[-1].replace("xlsx", "ps1")
 
     with open(script_name, 'w') as f:
+        # get host name
+        f.write('[System.Net.Dns]::GetHostName();\n')
         for key in ps_args_dict:
             for cmd in ps_args_dict[key]:
                 f.write(cmd)
