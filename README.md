@@ -6,8 +6,8 @@ Supports Windows versions:
 - [x] Windows 10 Enterprise
 - [x] Windows 11 Enterprise
 - [x] Windows Server 2016 MS/DC
-- [x] Windows Server 2019 MS
-- [x] Windows Server 2022 MS
+- [x] Windows Server 2019 MS/DC
+- [x] Windows Server 2022 MS/DC
 
 ## Addressing the Challenges
 
@@ -147,5 +147,3 @@ Note: Windows 10 disables ADMIN$ by default. For all other operating systems, th
   
 ***
 
-## Remarks
-1. 
