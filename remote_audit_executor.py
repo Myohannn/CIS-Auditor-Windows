@@ -111,6 +111,21 @@ def gen_ps_args(data_dict: dict) -> dict:
                 elif "Force logoff when logon hours expire" in description:
                     subcategory = 'ForceLogoffWhenHourExpire ='
 
+                elif "Enforce user logon restrictions" in description:
+                    subcategory = 'TicketValidateClient ='
+
+                elif "Maximum lifetime for service ticket" in description:
+                    subcategory = 'MaxServiceAge ='
+
+                elif "Maximum lifetime for user ticket" in description:
+                    subcategory = 'MaxTicketAge ='
+
+                elif "Maximum lifetime for user ticket renewal" in description:
+                    subcategory = 'MaxRenewAge ='
+
+                elif "Maximum tolerance for computer clock synchronization" in description:
+                    subcategory = 'MaxClockSkew ='
+
                 else:
                     actual_value_list.append("")
 
@@ -500,12 +515,14 @@ def read_file(win_version: str) -> dict:
     }
 
     version_dict = {
-        'Windows 10 Enterprise': 'src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx',
-        'Windows 11 Enterprise': 'src\Audit\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.xlsx',
-        'Windows Server 2016 MS': 'src\Audit\CIS_Microsoft_Windows_Server_2016_Benchmark_v2.0.0_L1_MS.xlsx',
-        'Windows Server 2019 MS': 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_MS.xlsx',
-        'Windows Server 2019 DC': 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.xlsx',
-        'Windows Server 2022 MS': 'src\Audit\CIS_Microsoft_Windows_Server_2022_Benchmark_v2.0.0_L1_MS.xlsx',
+        'Windows 10 Enterprise L1': 'src\Audit\CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0.xlsx',
+        'Windows 11 Enterprise L1': 'src\Audit\CIS_MS_Windows_11_Enterprise_Level_1_v1.0.0.xlsx',
+        'Windows Server 2016 MS L1': 'src\Audit\CIS_Microsoft_Windows_Server_2016_Benchmark_v2.0.0_L1_MS.xlsx',
+        'Windows Server 2019 MS L1': 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_MS.xlsx',
+        'Windows Server 2019 DC L1': 'src\Audit\CIS_Microsoft_Windows_Server_2019_Benchmark_v2.0.0_L1_DC.xlsx',
+        'Windows Server 2019 STIG DC L1': 'src\Audit\CIS_Microsoft_Windows_Server_2019_STIG_v1.0.1_L1_DC.xlsx',
+        'Windows Server 2019 STIG MS L1': 'src\Audit\CIS_Microsoft_Windows_Server_2019_STIG_v1.0.1_L1_MS.xlsx',
+        'Windows Server 2022 MS L1': 'src\Audit\CIS_Microsoft_Windows_Server_2022_Benchmark_v2.0.0_L1_MS.xlsx',
 
     }
 

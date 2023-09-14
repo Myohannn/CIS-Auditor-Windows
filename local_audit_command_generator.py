@@ -86,6 +86,21 @@ def gen_ps_args(data_dict: dict) -> dict:
                 elif "Force logoff when logon hours expire" in description:
                     subcategory = 'ForceLogoffWhenHourExpire ='
 
+                elif "Enforce user logon restrictions" in description:
+                    subcategory = 'TicketValidateClient ='
+
+                elif "Maximum lifetime for service ticket" in description:
+                    subcategory = 'MaxServiceAge ='
+
+                elif "Maximum lifetime for user ticket" in description:
+                    subcategory = 'MaxTicketAge ='
+
+                elif "Maximum lifetime for user ticket renewal" in description:
+                    subcategory = 'MaxRenewAge ='
+
+                elif "Maximum tolerance for computer clock synchronization" in description:
+                    subcategory = 'MaxClockSkew ='
+
                 else:
                     pwd_policy_args.append("\n")
 
@@ -342,6 +357,9 @@ if __name__ == '__main__':
 
     with open(script_name, 'w') as f:
         # get host name
+        f.write(
+            r'if (!(Test-Path -Path C:\temp )) { New-Item -ItemType directory -Path C:\temp };secedit /export /cfg C:\temp\secpol.cfg;')
+        f.write("\nWrite-Output '====';\n")
         f.write('[System.Net.Dns]::GetHostName();\n')
         for key in ps_args_dict:
             for cmd in ps_args_dict[key]:

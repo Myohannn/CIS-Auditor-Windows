@@ -49,11 +49,10 @@ def get_audit_policy_actual_value(args_list, ip):
     actual_value_list.pop(0)
 
     for i in range(len(actual_value_list)):
-        val = actual_value_list[i].split()[-1].strip()
-        if val == "Auditing":
-            actual_value_list[i] = "No Auditing"
-        else:
-            actual_value_list[i] = val
+
+        val = val.split('  ')[-1].strip()
+
+        actual_value_list[i] = val
 
     # print(actual_value_list)
     # print("length of value", len(actual_value_list))
@@ -111,16 +110,16 @@ def compare_audit_result(actual_value, expected_value):
     result_dict = {"Success and Failure": "Success, Failure",
                    "Success": "Success",
                    "Failure": "Failure",
-                   "No Auditing": "Not Configured"}
+                   "No Auditing": "No Auditing"}
 
     if "||" in expected_value:
         expected_list = expected_value.split("||")
         for i in expected_list:
             i = i.strip()
-            if result_dict[actual_value] == i:
+            if result_dict[actual_value].lower() == i.lower():
                 return True
 
-    elif result_dict[actual_value] == expected_value:
+    elif result_dict[actual_value].lower() == expected_value.lower():
 
         return True
 
@@ -147,11 +146,7 @@ def compare_audit_policy_local(data_dict):
         expected_value = str(value_data_values[idx]).lower()
         actual_value = actual_value_list[idx].strip()
 
-        val = actual_value.split()[-1].strip()
-        if val == "Auditing":
-            actual_value = "No Auditing"
-        else:
-            actual_value = val
+        actual_value = actual_value.split('  ')[-1].strip()
 
         actual_value_list[idx] = actual_value
 

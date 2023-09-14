@@ -17,7 +17,7 @@ def get_registry_value_list(args_list):
         win_client = Client("", username="", password="")
         win_client.connect()
         win_client.create_service()
-        # args = "-command \"Get-ItemPropertyValue -Path 'HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion' -Name 'ProductName'\""
+        # args = "-command \"Get-ItemPropertyValue -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name 'CachedLogonsCount'\""
         # args = f"-command Get-ItemPropertyValue -Path '{reg_key}' -Name '{reg_item}'"
 
         result = ''
@@ -115,17 +115,21 @@ def compare_reg_value(ip_addr, actual_value_list, data_dict):
 
             elif "[" in expected_value:
                 vals = expected_value.strip("[]").split("..")
-                min_val = vals[0]
-                max_val = vals[1]
+                if len(vals) == 2:
+                    min_val = vals[0]
+                    max_val = vals[1]
 
-                if min_val == "min":
-                    if int(actual_value) <= int(max_val):
-                        pass_result = True
-                elif max_val == "max":
-                    if int(actual_value) >= int(min_val):
-                        pass_result = True
+                    if min_val == "min":
+                        if int(actual_value) <= int(max_val):
+                            pass_result = True
+                    elif max_val == "max":
+                        if int(actual_value) >= int(min_val):
+                            pass_result = True
+                    else:
+                        if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                            pass_result = True
                 else:
-                    if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                    if str(expected_value) == str(actual_value):
                         pass_result = True
 
             else:
@@ -239,17 +243,22 @@ def compare_reg_value_local(data_dict):
 
             elif "[" in expected_value:
                 vals = expected_value.strip("[]").split("..")
-                min_val = vals[0]
-                max_val = vals[1]
+                if len(vals) == 2:
 
-                if min_val == "min":
-                    if int(actual_value) <= int(max_val):
-                        pass_result = True
-                elif max_val == "max":
-                    if int(actual_value) >= int(min_val):
-                        pass_result = True
+                    min_val = vals[0]
+                    max_val = vals[1]
+
+                    if min_val == "min":
+                        if int(actual_value) <= int(max_val):
+                            pass_result = True
+                    elif max_val == "max":
+                        if int(actual_value) >= int(min_val):
+                            pass_result = True
+                    else:
+                        if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                            pass_result = True
                 else:
-                    if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                    if str(expected_value) == str(actual_value):
                         pass_result = True
 
             else:

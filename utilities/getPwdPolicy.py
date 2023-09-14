@@ -303,6 +303,46 @@ def compare_pwd_policy_local(data_dict):
                 print(f"Invalid value: {actual_value}")
                 pass_result = False
 
+        elif "Enforce user logon restrictions" in description:
+            try:
+                actual_value = int(actual_value)
+                if actual_value == int(expected_value):
+                    pass_result = True
+                else:
+                    pass_result = False
+            except ValueError:
+                print(f"Invalid value: {actual_value}")
+                pass_result = False
+
+        elif "Maximum lifetime for service ticket" in description or "Maximum lifetime for user ticket" in description or "Maximum lifetime for user ticket renewal" in description:
+            try:
+                actual_value = int(actual_value)
+                vals = expected_value.strip("[]").split("..")
+                min_val = vals[0]
+                max_val = vals[1]
+
+                if int(actual_value) >= int(min_val) and int(actual_value) <= int(max_val):
+                    pass_result = True
+                else:
+                    pass_result = False
+            except ValueError:
+                print(f"Invalid value: {actual_value}")
+                pass_result = False
+
+        elif "Maximum tolerance for computer clock synchronization" in description:
+            try:
+                actual_value = int(actual_value)
+                vals = expected_value.strip("[]").split("..")
+                max_val = vals[1]
+
+                if int(actual_value) <= int(max_val):
+                    pass_result = True
+                else:
+                    pass_result = False
+
+            except ValueError:
+                pass_result = False
+
         else:
             pass_result = False
 

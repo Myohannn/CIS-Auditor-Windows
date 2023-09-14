@@ -62,7 +62,7 @@ def get_actual_values(data_dict: dict) -> dict:
 
             new_dict[key] = new_df
         except Exception as e:
-            logging.debug('Failed to get actual value: %s', e)
+            print('Failed to get actual value:', e)
 
     return new_dict
 
@@ -258,6 +258,7 @@ if __name__ == '__main__':
 
     # actual value list
     output_list = single_line.strip().split("====")
+    output_list.pop(0)
     ip_addr = output_list[0]
     output_list.pop(0)
 

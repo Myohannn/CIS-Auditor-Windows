@@ -189,7 +189,10 @@ def compare_lockout_policy_local(data_dict):
         actual_value = actual_value_list[idx].split()[-1].strip()
         actual_value_list[idx] = actual_value
 
-        if "Account lockout duration" in description:
+        if actual_value == "Null":
+            pass_result = False
+
+        elif "Account lockout duration" in description:
             try:
                 actual_value = int(actual_value)
                 vals = expected_value.strip("[]").split("..")

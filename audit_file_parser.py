@@ -15,7 +15,8 @@ regexes = {
     'audit_policy_subcategory': re.compile(r'audit_policy_subcategory\s+:\s+(.*?)\n'),
     'key_item': re.compile(r'key_item\s+:\s+(.*?)\n'),
     'right_type': re.compile(r'right_type\s+:\s+(.*?)\n'),
-    'solution': re.compile(r'solution\s*:\s*(.+?)\n\s*Default Value:', re.DOTALL | re.IGNORECASE)
+    # 'solution': re.compile(r'solution\s*:\s*(.+?)\n\s*Default Value:', re.DOTALL | re.IGNORECASE)
+    'solution': re.compile(r'solution\s*:\s*(.+?)\n\s*reference', re.DOTALL | re.IGNORECASE)
 }
 
 
@@ -30,7 +31,8 @@ data_dict = {
     "ANONYMOUS_SID_SETTING": [],
     "AUDIT_POLICY_SUBCATEGORY": [],
     "REG_CHECK": [],
-    "WMI_POLICY": []
+    "WMI_POLICY": [],
+    "SERVICE_POLICY": []
 }
 
 
