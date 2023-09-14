@@ -1,5 +1,5 @@
-#TRUSTED 432b65f7be7f35d570dbf44b6fcf6a65b8a2f49a3139a95f7627aa7b480d3fb4313076d81de274b83d861a889f483f5f6da5184026aa809ecd622012d427db9179fcfeb8f881579182dc5a7ca056cbe75de8851702e731598199c30038d6b0f467c3c07f95e76b011f3750a669624c2566011502e27bd50b58a8b9a6baeea0d3301406d1c7a99a3a3cb26ec172ee76abcc101a05363317ffa387d1f0bbc8277590f46c2faffcc75f814b22a51b8eb875b21adcf3f44129d41c0631bdc1970475db71447b26148d15baa64e9da3c757dd75141d0085e95301f0883889b9f89277821acbeadcf9eb985d7594810292f1d660e2f3dda5289187039dbff98b88baa57868e424c209df5309a8953a94490e789bbfe50bdaab0642821be6258b8d17a2b96da52787dd0854604e3bc64708461942f17c485d658b9179c8f9f8c815e5cd3299c1f4060cb691b34e700d9a1f5ca36d30e7335c208fb501242b7578a8d7928424f1ae434dbda2ae649fbe2f5993a85dc0481af8d57597b94368dad6af6e73806dff3882c157360c1f8732ce5a2fbe08f644efef94ca3cd98cb14bd8320b579f10524a52892d67b16cd0026b93d27878e43cbd74dea3e732c00bc2c375a86cd04ba25dbcadd856ec5893a3ccf8affdf7c1d1f8432c15702758678c38a7eea5c0bfd21280551be56eefc640c3fe6bb56129b870e29d754b2a0cf3ba06303175
-#TRUST-RSA-SHA256 9b4f824325bec21211339fee79029f12b621ec1b04d5211a1f20c54cbc518375fd23411c1fa797e81fc6f523616ffc3393f13d5745c1b8c5f51a9b2aab8aae5f261aff9938c1a9346f7cdf1fbde33ea2450098424f37cdb1aec04f4d2610d9fface72ee426a24c3f60e284db53e2e4e9089503a26a2d5138df7332c29d99b72dbe460184ccfa83ce4a93bee83f54fe15dbdc1336930e9de4faa904781db265af234f04bb07fcbf09c09b90a5abb067e2d14ede45f398991a94aeb2f61ce6ade5d3a5b16e235b096f61fc4c791cf2869cdd5fbf98566a1019650a2d3ffe37d02db3a2ad69650ba47d6784660cc4ea7ac4932dc355b3711f1c1d5f29aa64b38641dfd27c3964e5e640bea7ee21e0acf464bd24d5318b87618408c296958cca38790cce6ae3f20dfd5503f15e25cc14ecaa55945d10d7eea8cb0e5a1647e7e34781d41044bc01ed4409d735a0c06aa90b92751ec904b1389dee4b1667319983625fadd7ae76605d62a77691bb0e59a37577bf808acde516975d92f5f414dbdff28676140d0bd25140fff5840b7682f0fd8a43a3be4f9ce1f2bbb8dd50637f0773e99fdf7b14e4676211906e0c2c5211999cd3a41b0067b0f51e45ad2b8c28cf95392a21aec1e2a88946ad3cea83f66da1c8dfc165f65efe26faba760246a017eae527c554818e8d1b656e94db8f221ca7ea4c4b2232722359b448fc54b63a6b10b0
+#TRUSTED 890548c0a407fe7cd440d14ecb2ec7408ae0f65bd28063e7303fb156f7544e6975b7b80134c5f152acab49db1c989e5e382771d1a24142504895f98c26f23c92c62f9d6773a88639811d03e0bfc9adc9a7db857ca65d55f82e605e4bd334e02794134698a90dea386e8a91db26cb4b4009c463105cb8ccada431a486539bf4190551c597e328e41f0cd7543e0d23778a03c28b391c3f333bcaaec5445a8216576643f9dca52e69cc62f80cda8dea705c76dcb1c0f55b044cd54a2b858aa30d497bfa917d1a89ce6b112846166204be6e6bf91ade61aeb94ec5c9c73691c4f823d1a4f4b9a90cb2e5aae7418b2db35b70f9838677bc777f22487e9d1985ee8914740256dbabc958875b18e5329b85e0b9546fc3b4fac34fdcd26c8d5e4271c3dcda609a13d4e44e67e8e763eb67610d827b4c02e6c997b72485db7d0c25751e5cafad1a538baf1b5cc1eea8f1177139f7bfd2008be143de4886ca92feafe975ecbf6f636943b0d267f1b41b3fbeb0f56739c21b69d033365a62e5c151d3538d0dd4897792c84146657b5a458bc659ee8df381445262ed851e1127207841668a213f1bb8ee17a100c6b835159a21d69f7bf078e2a45de986afc57c14750990879c719f8fe0ef35978bd0ae97ef7f4e2b912d5be3e1d66c89679a362f04c7b752a51ee9ff81d0b13e41b066f317570860ec3f7547faf2fd0f5580475f8c071fe6ab
+#TRUST-RSA-SHA256 9062a1badf60199f3e37d2f5d9aef85ccdb6419d0cdece995a805caa7c5516d292bf059f3987c5ba66aadeac2b3fe1ba0ca405ec37364e4895f385f99f4a1cc4f3e70ca7a23efcbc28a516cfdcc1dced4b3d3d2128bfc51f3e9984194bff495a23846dc02d7a90a4a08bb299dc1068d4f25bc9d2f5db25c1386b87cb5105fc6c46b31cecd6b4703338b70ef45f041073f1fb8365e5096c8817bbf2c4afc07abf754548f0061733c37c842cd568dbb822ebe5735ea99c0efafc5448dc3499dd50997a826295e725e624c149c91517f6eb2e063006d0ce83c1a4405f02cc7c4ee5389c10b3c4384175d268f14345eed4b10f3b29a18404d6956ae3bf81652fd47ae5b83c2d7192936a3563079d7e72cd0e89d8439735742f7933d15f6734691369a5667bcad17911cf09844feb1cdfd9e0bebc87a94d337c6877cf66ae2b3d12e83f153ac62e55c157e4d353055dcee52853fa81025fbdb83fdb83ba3505422d37f01866f9f2f82db44cf4416567b0f5c6f815729d2d34e9a1d986d045b931788423236834493c18381b87166c3c790aed4b9fc9c55590d50beb0865fb6a946bb0cbcf96a2fa9aba5fcec7cdbf4fe26851995da74cf2a150964c569da6535b7282374596f61a4aff43fc16fb53fe43b80518125380569264ddc135489e10dd0db70daaa5bf36e43439efdb2e408fdb650b47ca69880a1c4520b90b7e3d3f3ea890
 #
 # This script is Copyright (C) 2004-2023 and is owned by Tenable, Inc. or an Affiliate thereof.
 #
@@ -12,8 +12,8 @@
 # http://static.tenable.com/prod_docs/Nessus_6_SLA_and_Subscription_Agreement.pdf
 #
 # @PROFESSIONALFEED@
-# $Revision: 1.0 $
-# $Date: 2023/06/15 $
+# $Revision: 1.2 $
+# $Date: 2023/08/24 $
 #
 # description : This document implements the security configuration as recommended by the
 #               CIS Microsoft Windows Server 2019 Benchmark
@@ -11222,7 +11222,7 @@ Disabled. (Transcription of PowerShell-based applications is disabled by default
       reference   : "800-171|3.1.7,800-53|AC-6(10),800-53r5|AC-6(10),CN-L3|7.1.3.2(b),CN-L3|7.1.3.2(g),CN-L3|8.1.4.2(d),CN-L3|8.1.10.6(a),CSF|PR.AC-4,GDPR|32.1.b,HIPAA|164.306(a)(1),HIPAA|164.312(a)(1),ITSG-33|AC-6,LEVEL|1A,NESA|T5.1.1,NESA|T5.2.2,NESA|T5.4.1,NESA|T5.4.4,NESA|T5.4.5,NESA|T5.5.4,NESA|T5.6.1,NESA|T7.5.3,NIAv2|AM1,NIAv2|AM23f,NIAv2|SS13c,NIAv2|SS15c,PCI-DSSv3.2.1|7.1.2,PCI-DSSv4.0|7.2.1,PCI-DSSv4.0|7.2.2,QCSC-v1|5.2.2,QCSC-v1|6.2,SWIFT-CSCv1|5.1,TBA-FIISB|31.4.2,TBA-FIISB|31.4.3"
       see_also    : "https://workbench.cisecurity.org/benchmarks/12668"
       value_type  : POLICY_DWORD
-      value_data  : "0"
+      value_data  : "1"
       reg_key     : "HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription"
       reg_item    : "EnableTranscripting"
       reg_option  : CAN_NOT_BE_NULL
@@ -11490,7 +11490,7 @@ Disabled. (Windows Update will not offer you any pre-release updates and you wil
       reference   : "800-171|3.4.8,800-53|CM-7(5),800-53|CM-10,800-53r5|CM-7(5),800-53r5|CM-10,CSCv7|2.6,CSCv8|2.5,CSF|DE.CM-3,CSF|PR.IP-1,CSF|PR.PT-3,GDPR|32.1.b,HIPAA|164.306(a)(1),ISO/IEC-27001|A.12.5.1,ISO/IEC-27001|A.12.6.2,ITSG-33|CM-7,LEVEL|1A,NIAv2|SS15a,PCI-DSSv3.2.1|2.2.2,QCSC-v1|3.2,QCSC-v1|8.2.1,SWIFT-CSCv1|2.3,TBA-FIISB|44.2.2,TBA-FIISB|49.2.3"
       see_also    : "https://workbench.cisecurity.org/benchmarks/12668"
       value_type  : POLICY_DWORD
-      value_data  : 1
+      value_data  : 0
       reg_key     : "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
       reg_item    : "ManagePreviewBuildsPolicyValue"
       reg_option  : CAN_NOT_BE_NULL
@@ -11716,7 +11716,7 @@ Enabled: 3 - Auto download and notify for install. (Windows finds updates that a
 
     <custom_item>
       type        : REGISTRY_SETTING
-      description : "18.10.93.2.2 Ensure 'Configure Automatic Updates: Scheduled install day' is set to '0 - Every day' - Every day'"
+      description : "18.10.93.2.2 Ensure 'Configure Automatic Updates: Scheduled install day' is set to '0 - Every day'"
       info        : "This policy setting specifies when computers in your environment will receive security updates from Windows Update or WSUS.
 
 The recommended state for this setting is: 0 - Every day.
