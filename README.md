@@ -147,5 +147,3 @@ Note: Windows 10 disables ADMIN$ by default. For all other operating systems, th
   
 ***
 
-## Remarks
-1. 
