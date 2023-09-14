@@ -210,6 +210,8 @@ The audit process begins with the preparation of an audit file, which forms the 
    - Example file:
      [CIS MS Windows 10 Enterprise Level 1 v2.0.0](https://www.tenable.com/audits/CIS_MS_Windows_10_Enterprise_Level_1_v2.0.0)
 
+     ![image](https://github.com/Myohannn/CIS-Auditor-Windows/assets/60417289/39481189-65ae-4955-80fd-0d386ef02956)
+
 2. **Run the parser**:
    - Run the `audit_file_parser.py` script from the command line, passing the path of the .audit file as an argument.
      ```
@@ -230,6 +232,9 @@ Conducting a remote audit with the Security Auditor Program involves the followi
    - Modify the `config.xlsx` file in the `config` directory. This file contains details for the security audit like IP address, username, password, and Windows version of the target system.
    
    - **Note**: Ensure the provided account has administrator privileges. Maintain consistency by selecting the same Windows version for each audit.
+
+     ![image](https://github.com/Myohannn/CIS-Auditor-Windows/assets/60417289/e31c7f32-3ad2-4268-9e11-64500f7f48d7)
+
 
 2. **Check the Remote Host**:
    - Run the `remote_host_checker.py` script from the command line:
